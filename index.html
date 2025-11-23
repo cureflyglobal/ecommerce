@@ -1,226 +1,187 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luxe - Complete Ecommerce Template</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>[Your Premium Template] - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <meta name="description" content="A complete, high-performance static e-commerce template.">
 </head>
 <body>
 
-    <div class="top-banner">
-        ✦ FREE SHIPPING WORLDWIDE ON ALL ORDERS ✦
+    <div class="announcement-bar" role="complementary">
+        <p class="lang-text" data-lang-key="announcement">✦ FREE SHIPPING WORLDWIDE ON ALL ORDERS ✦</p>
     </div>
 
-    <header class="header">
-        <div class="header-wrapper">
-            <div class="logo-section" onclick="navigateTo('home')">
-                <div class="logo">LUXE</div>
-                <div class="tagline">Complete Ecommerce</div>
-            </div>
-            <nav class="main-nav">
-                <a onclick="navigateTo('home')">Home</a>
-                <a onclick="navigateTo('products')">Shop</a>
-                <a onclick="navigateTo('cart')">Cart</a>
-                <a onclick="navigateTo('account')">Account</a>
+    <header class="header" role="banner">
+        <div class="header-container">
+            <h1 class="logo">[YOUR SHOP NAME]</h1>
+            <nav class="main-nav" role="navigation">
+                <ul>
+                    <li><a href="index.html" class="lang-text" data-lang-key="home">Home</a></li>
+                    <li><a href="#all-products-section" class="lang-text" data-lang-key="shop">Shop</a></li>
+                    <li><a href="#cart-section" class="lang-text" data-lang-key="cart">Cart</a></li>
+                    <li><a href="#account-section" class="lang-text" data-lang-key="account">Account</a></li>
+                    <li><a href="admin.html" class="lang-text admin-link" data-lang-key="admin">Admin</a></li>
+                </ul>
             </nav>
             <div class="header-actions">
-                <span class="search-icon">🔍</span>
-                <span class="wishlist-icon">♡</span>
-                <span class="cart-icon" onclick="navigateTo('cart')">
-                    🛒 <span class="cart-badge" id="cart-badge">0</span>
-                </span>
+                <button class="lang-switcher" data-lang="en">EN</button>
+                <button class="lang-switcher" data-lang="es">ES</button>
+                <button class="icon-button" aria-label="Search" role="button">🔍</button>
+                <button class="icon-button" aria-label="Wishlist" role="button">♡</button>
+                <a href="#cart-section" class="icon-button cart-icon" aria-label="Shopping Cart">
+                    🛒 <span id="cart-counter" aria-live="polite">0</span>
+                </a>
             </div>
         </div>
     </header>
 
-    <div id="home" class="page active">
-        <section class="hero">
-            <div class="hero-left">
-                <h1>Complete<br>Ecommerce Solution</h1>
-                <p>A fully-featured ecommerce template with all essential pages: product listings, cart, checkout, account management, and more.</p>
-                <button class="hero-btn" onclick="navigateTo('products')">Shop Now</button>
+    <main role="main">
+        <section class="hero" role="region" aria-label="Main Banner">
+            <div class="hero-content">
+                <h2 class="lang-text" data-lang-key="hero_title">Complete E-commerce Template</h2>
+                <p class="lang-text" data-lang-key="hero_subtitle">A fully-featured static template with all essential pages for fast deployment.</p>
+                <a href="#all-products-section" class="button lang-text" data-lang-key="shop_now">Shop Now</a>
             </div>
-            <div class="hero-right">🛍️</div>
+            <img src="placeholder-hero.jpg" alt="Fashion and Style Hero Image" loading="lazy">
         </section>
 
-        <section class="products-section">
-            <div class="section-header">
-                <h2>Featured Products</h2>
-                <p>Handpicked selections for you</p>
+        <section class="featured-products" role="region" aria-labelledby="featured-heading">
+            <h3 id="featured-heading" class="lang-text" data-lang-key="featured_title">Featured Products</h3>
+            <p class="lang-text" data-lang-key="featured_subtitle">Handpicked selections for you</p>
+            <div class="product-grid">
+                <div class="product-card" data-category="outerwear" data-price="299" data-rating="5">
+                    <img src="placeholder-coat.jpg" alt="Premium Wool Coat Placeholder" loading="lazy">
+                    <h4 class="product-title lang-text" data-lang-key="product_1_title">Premium Wool Coat</h4>
+                    <p class="product-category lang-text" data-lang-key="product_1_category">Outerwear</p>
+                    <p class="product-price">$299</p>
+                    <button class="button add-to-cart" data-product-id="1">Add to Cart</button>
+                </div>
+                </div>
+        </section>
+
+        <section class="all-products" id="all-products-section" role="region" aria-labelledby="all-products-heading">
+            <h3 id="all-products-heading" class="lang-text" data-lang-key="all_products_title">All Products</h3>
+            <p class="lang-text" data-lang-key="all_products_subtitle">Explore our complete collection</p>
+
+            <div class="controls-bar">
+                <div class="filters">
+                    <button class="filter-btn active" data-filter="all" aria-label="Show All Products">All</button>
+                    <button class="filter-btn" data-filter="dresses" aria-label="Filter by Dresses">Dresses</button>
+                    <button class="filter-btn" data-filter="outerwear" aria-label="Filter by Outerwear">Outerwear</button>
+                    <button class="filter-btn" data-filter="accessories" aria-label="Filter by Accessories">Accessories</button>
+                </div>
+                <div class="sorting">
+                    <label for="sort-select" class="lang-text" data-lang-key="sort_by">Sort By:</label>
+                    <select id="sort-select" aria-label="Sort Products">
+                        <option value="default" class="lang-text" data-lang-key="sort_default">Default</option>
+                        <option value="price-asc" class="lang-text" data-lang-key="sort_price_asc">Price: Low to High</option>
+                        <option value="price-desc" class="lang-text" data-lang-key="sort_price_desc">Price: High to Low</option>
+                        <option value="rating-desc" class="lang-text" data-lang-key="sort_rating_desc">Rating</option>
+                    </select>
+                </div>
             </div>
-            <div class="products-grid">
-                <div class="product-item">
-                    <div class="product-img">🧥</div>
-                    <div class="product-details">
-                        <div class="product-title">Premium Wool Coat</div>
-                        <div class="product-cat">Outerwear</div>
-                        <div class="product-price">$299</div>
-                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
-                    </div>
+
+            <div class="product-grid" id="product-list">
+                <div class="product-card" data-category="outerwear" data-price="299" data-rating="4.5">
+                    <img src="placeholder-coat.jpg" alt="Premium Wool Coat" loading="lazy">
+                    <h4 class="product-title">Premium Wool Coat</h4>
+                    <p class="product-price">$299</p>
+                    <div class="rating" aria-label="Rating: 4 and a half stars">★★★★☆</div>
+                    <button class="button add-to-cart" data-product-id="1">Add to Cart</button>
                 </div>
-                <div class="product-item">
-                    <div class="product-img">👗</div>
-                    <div class="product-details">
-                        <div class="product-title">Silk Evening Dress</div>
-                        <div class="product-cat">Dresses</div>
-                        <div class="product-price">$249</div>
-                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
-                    </div>
+                <div class="product-card" data-category="dresses" data-price="249" data-rating="5">
+                    <img src="placeholder-dress.jpg" alt="Silk Evening Dress" loading="lazy">
+                    <h4 class="product-title">Silk Evening Dress</h4>
+                    <p class="product-price">$249</p>
+                    <div class="rating" aria-label="Rating: 5 stars">★★★★★</div>
+                    <button class="button add-to-cart" data-product-id="2">Add to Cart</button>
                 </div>
-                <div class="product-item">
-                    <div class="product-img">👕</div>
-                    <div class="product-details">
-                        <div class="product-title">Cotton Oxford Shirt</div>
-                        <div class="product-cat">Shirts</div>
-                        <div class="product-price">$89</div>
-                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
-                    </div>
+                 <div class="product-card" data-category="accessories" data-price="350" data-rating="4">
+                    <img src="placeholder-bag.jpg" alt="Leather Tote Bag" loading="lazy">
+                    <h4 class="product-title">Leather Tote Bag</h4>
+                    <p class="product-price">$350</p>
+                    <div class="rating" aria-label="Rating: 4 stars">★★★★☆</div>
+                    <button class="button add-to-cart" data-product-id="3">Add to Cart</button>
                 </div>
-                <div class="product-item">
-                    <div class="product-img">👖</div>
-                    <div class="product-details">
-                        <div class="product-title">Tailored Trousers</div>
-                        <div class="product-cat">Bottoms</div>
-                        <div class="product-price">$149</div>
-                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
-                    </div>
                 </div>
+        </section>
+
+        <section class="product-detail-mockup" role="region" aria-labelledby="detail-heading">
+             <h3 id="detail-heading" class="lang-text" data-lang-key="detail_title">Product Detail Mockup (Silk Evening Dress)</h3>
+             <div class="product-container">
+                <div class="product-gallery">
+                    <img src="placeholder-dress.jpg" alt="Primary view of the Silk Evening Dress" loading="lazy">
+                    </div>
+
+                <div class="product-info">
+                    <h4 class="lang-text" data-lang-key="product_2_title">Silk Evening Dress</h4>
+                    <p class="product-price">$249</p>
+                    <p class="product-description lang-text" data-lang-key="product_detail_desc">Luxurious silk dress perfect for any evening occasion. Features a minimalist design with a flattering silhouette.</p>
+                    <div class="size-selector">
+                        <label for="size-select">Size:</label>
+                        <select id="size-select" aria-label="Select Size">
+                            <option>S</option><option>M</option><option>L</option>
+                        </select>
+                    </div>
+                    <button class="button add-to-cart" data-product-id="2">Add to Cart</button>
+
+                    <div class="reviews" role="group" aria-label="Customer Reviews">
+                        <h5 class="lang-text" data-lang-key="reviews_title">Customer Reviews (3)</h5>
+                        <div class="review-item">
+                            <div class="rating">★★★★★</div>
+                            <p class="review-text">"Amazing quality and perfect fit! Highly recommend."</p>
+                            <p class="review-author">— Buyer A</p>
+                        </div>
+                         </div>
+                </div>
+             </div>
+
+            <div class="related-products" role="group" aria-labelledby="related-heading">
+                <h4 id="related-heading" class="lang-text" data-lang-key="related_title">Related Products</h4>
+                <div class="product-grid related-grid">
+                     </div>
             </div>
         </section>
-    </div>
 
-    <div id="products" class="page">
-        <section class="product-listing-section">
-            <div class="section-header">
-                <h2>All Products</h2>
-                <p>Explore our complete collection</p>
-            </div>
-            <div class="products-grid">
-                <div class="product-item">
-                    <div class="product-img">🧥</div>
-                    <div class="product-details">
-                        <div class="product-title">Premium Wool Coat</div>
-                        <div class="product-price">$299</div>
-                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-item">
-                    <div class="product-img">👞</div>
-                    <div class="product-details">
-                        <div class="product-title">Leather Loafers</div>
-                        <div class="product-price">$189</div>
-                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="product-item">
-                    <div class="product-img">👜</div>
-                    <div class="product-details">
-                        <div class="product-title">Leather Totebag</div>
-                        <div class="product-price">$350</div>
-                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
-                    </div>
-                </div>
-            </div>
+
+        <section class="cart-section" id="cart-section" role="region" aria-labelledby="cart-heading">
+             <h3 id="cart-heading" class="lang-text" data-lang-key="cart_title">Your Cart</h3>
+             <div class="cart-item">
+                 <img src="placeholder-coat.jpg" alt="Premium Wool Coat" class="cart-item-img" loading="lazy">
+                 <div class="item-details">
+                     <h4>Premium Wool Coat</h4>
+                     <p>Size: M | Color: Black</p>
+                     <button class="remove-item">Remove</button>
+                 </div>
+                 <div class="item-price">$299.00</div>
+             </div>
+
+             <div class="summary">
+                 <h4>Summary</h4>
+                 <p class="lang-text" data-lang-key="subtotal">Subtotal: <span>$299.00</span></p>
+                 <p class="lang-text" data-lang-key="shipping">Shipping: <span>Free</span></p>
+                 <p class="lang-text" data-lang-key="total">Total: <span>$299.00</span></p>
+                 <a href="checkout-shipping.html" class="button primary-button lang-text" data-lang-key="proceed_checkout">Proceed to Checkout</a>
+             </div>
         </section>
-    </div>
 
-    <div id="cart" class="page">
-        <div class="cart-container">
-            <div class="cart-header">
-                <h1>Your Cart</h1>
-            </div>
-            <div class="cart-content">
-                <div class="cart-items">
-                    <div class="cart-item">
-                        <div class="cart-item-img">🧥</div>
-                        <div class="cart-item-details">
-                            <h3>Premium Wool Coat</h3>
-                            <p>Size: M | Color: Black</p>
-                            <button class="remove-btn">Remove</button>
-                        </div>
-                        <div class="cart-item-price">
-                            <div class="price">$299.00</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="cart-summary">
-                    <h2>Summary</h2>
-                    <div class="summary-row"><span>Subtotal</span><span>$299.00</span></div>
-                    <div class="summary-row"><span>Shipping</span><span>Free</span></div>
-                    <div class="summary-row total"><span>Total</span><span>$299.00</span></div>
-                    <button class="checkout-btn">Proceed to Checkout</button>
-                </div>
-            </div>
-        </div>
-    </div>
+        <section class="account-section" id="account-section" role="region" aria-labelledby="account-heading">
+            <h3 id="account-heading" class="lang-text" data-lang-key="account_title">My Account</h3>
+            </section>
 
-    <div id="account" class="page">
-        <div class="account-container">
-            <div class="account-sidebar">
-                <h3>My Account</h3>
-                <div class="account-nav">
-                    <button class="account-nav-item active">Orders</button>
-                    <button class="account-nav-item">Addresses</button>
-                    <button class="account-nav-item">Logout</button>
-                </div>
-            </div>
-            <div class="account-content">
-                <h2>Order History</h2>
-                <div class="orders-list">
-                    <div class="order-card">
-                        <div class="order-header">
-                            <span class="order-number">Order #10234</span>
-                            <span class="order-status">Delivered</span>
-                        </div>
-                        <p>3 Items • $450.00</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </main>
 
-    <footer class="footer">
-        <div class="footer-grid">
-            <div class="footer-col">
-                <h4>Shop</h4>
-                <ul>
-                    <li><a href="#">New Arrivals</a></li>
-                    <li><a href="#">Best Sellers</a></li>
-                    <li><a href="#">Sale</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Help</h4>
-                <ul>
-                    <li><a href="#">Shipping</a></li>
-                    <li><a href="#">Returns</a></li>
-                    <li><a href="#">Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>About</h4>
-                <ul>
-                    <li><a href="#">Our Story</a></li>
-                    <li><a href="#">Sustainability</a></li>
-                    <li><a href="#">Careers</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Follow Us</h4>
-                <ul>
-                    <li><a href="#">Instagram</a></li>
-                    <li><a href="#">Twitter</a></li>
-                    <li><a href="#">Facebook</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2024 LUXE Ecommerce Template. All Rights Reserved.
+    <footer class="footer" role="contentinfo">
+        <div class="footer-container">
+            <p>© 2024 [YOUR SHOP NAME] Template. All Rights Reserved.</p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <div id="cart-confirm-message" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="script.js" defer></script>
 </body>
 </html>
