@@ -149,6 +149,17 @@
     .product-card:hover .product-image {
       transform: scale(1.08);
     }
+    
+    /* Cart Item Image */
+    .cart-item-image {
+        width: 100px;
+        height: 100px;
+        background: #f5f5f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+    }
 
     /* Search Styles */
     .search-suggestions {
@@ -298,8 +309,7 @@
   </style>
   <script src="script.js" type="text/javascript" defer></script>
  </head>
- <body>
-<a href="#main-content" class="skip-link">Skip to main content</a> 
+ <body onload="updateCartDisplay()"> <a href="#main-content" class="skip-link">Skip to main content</a> 
 
 <div id="toast-notification" class="toast" role="status" aria-live="polite"></div>
 
@@ -346,7 +356,7 @@
       <div class="flex items-center gap-4">
           <button onclick="navigateTo('account')" class="nav-link" aria-label="My account">👤</button> 
           <button onclick="toggleWishlist()" class="nav-link" aria-label="Wishlist">❤️</button> 
-          <button onclick="navigateTo('cart')" class="nav-link relative" aria-label="Shopping cart"> 
+          <button onclick="navigateTo('cart'); updateCartDisplay()" class="nav-link relative" aria-label="Shopping cart"> 
               🛒 
               <span id="cart-count" class="cart-badge" aria-live="polite">0</span> 
           </button>
@@ -362,7 +372,7 @@
         <a onclick="navigateTo('home')" class="nav-link text-xl font-semibold hover:text-gray-900">Home</a>
         <a onclick="navigateTo('shop')" class="nav-link text-xl font-semibold hover:text-gray-900">Shop</a>
         <a onclick="navigateTo('account')" class="nav-link text-xl font-semibold hover:text-gray-900">Account</a>
-        <a onclick="navigateTo('cart')" class="nav-link text-xl font-semibold hover:text-gray-900">Cart</a>
+        <a onclick="navigateTo('cart'); updateCartDisplay()" class="nav-link text-xl font-semibold hover:text-gray-900">Cart</a>
         <a href="admin.html" class="nav-link text-xl font-semibold hover:text-gray-900">Admin Login</a>
     </nav>
   </aside>
@@ -380,22 +390,22 @@
        <section class="bg-black text-white py-6 text-center" aria-labelledby="promo-heading">
     <h2 id="promo-heading" class="text-2xl font-bold mb-2">⚡ FLASH SALE - 30% OFF</h2>
     <p class="mb-4">Limited Time Offer - Don't Miss Out!</p>
-    <div class="countdown" role="timer" aria-live="polite" aria-atomic="true">
+    <div class="countdown flex justify-center gap-8" role="timer" aria-live="polite" aria-atomic="true">
      <div class="countdown-item">
       <div class="countdown-value" id="countdown-days" aria-label="Days">00</div>
-      <div class="countdown-label">Days</div>
+      <div class="countdown-label text-sm">Days</div>
      </div>
      <div class="countdown-item">
       <div class="countdown-value" id="countdown-hours" aria-label="Hours">00</div>
-      <div class="countdown-label">Hours</div>
+      <div class="countdown-label text-sm">Hours</div>
      </div>
      <div class="countdown-item">
       <div class="countdown-value" id="countdown-minutes" aria-label="Minutes">00</div>
-      <div class="countdown-label">Minutes</div>
+      <div class="countdown-label text-sm">Minutes</div>
      </div>
      <div class="countdown-item">
       <div class="countdown-value" id="countdown-seconds" aria-label="Seconds">00</div>
-      <div class="countdown-label">Seconds</div>
+      <div class="countdown-label text-sm">Seconds</div>
      </div>
     </div>
    </section>
@@ -460,38 +470,38 @@
          <aside class="w-full md:w-64 flex-shrink-0" role="complementary" aria-label="Product filters">
       <div class="bg-white p-6 border border-gray-200">
        <h2 class="text-xl font-bold mb-4">Filters</h2>
-               <fieldset class="filter-group">
+               <fieldset class="filter-group border-b pb-4 mb-4">
             <legend class="font-semibold mb-2">Category</legend> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Women"> Women </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Men"> Men </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Accessories"> Accessories </label>
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Women" class="mr-2"> Women </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Men" class="mr-2"> Men </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Accessories" class="mr-2"> Accessories </label>
        </fieldset>
-               <fieldset class="filter-group">
+               <fieldset class="filter-group border-b pb-4 mb-4">
             <legend class="font-semibold mb-2">Price Range</legend> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="0-50"> Under $50 </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="50-100"> $50 - $100 </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="100-200"> $100 - $200 </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="200-99999"> Over $200 </label>
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="0-50" class="mr-2"> Under $50 </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="50-100" class="mr-2"> $50 - $100 </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="100-200" class="mr-2"> $100 - $200 </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="200-99999" class="mr-2"> Over $200 </label>
        </fieldset>
-               <fieldset class="filter-group">
+               <fieldset class="filter-group border-b pb-4 mb-4">
             <legend class="font-semibold mb-2">Color</legend> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Black"> Black </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="White"> White </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Blue"> Blue </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Red"> Red </label>
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Black" class="mr-2"> Black </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="White" class="mr-2"> White </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Blue" class="mr-2"> Blue </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Red" class="mr-2"> Red </label>
        </fieldset>
-               <fieldset class="filter-group">
+               <fieldset class="filter-group border-b pb-4 mb-4">
             <legend class="font-semibold mb-2">Size</legend> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="XS"> XS </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="S"> S </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="M"> M </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="L"> L </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="XL"> XL </label>
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="XS" class="mr-2"> XS </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="S" class="mr-2"> S </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="M" class="mr-2"> M </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="L" class="mr-2"> L </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="XL" class="mr-2"> XL </label>
        </fieldset>
                <fieldset class="filter-group">
             <legend class="font-semibold mb-2">Rating</legend> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="rating" value="4"> 4★ &amp; above </label> 
-            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="rating" value="3"> 3★ &amp; above </label>
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="rating" value="4" class="mr-2"> 4★ &amp; above </label> 
+            <label class="filter-option block mb-1"> <input type="checkbox" onchange="applyFilters()" data-filter="rating" value="3" class="mr-2"> 3★ &amp; above </label>
        </fieldset>
           <button class="btn-secondary w-full mt-4" onclick="clearFilters()">Clear All Filters</button>
       </div>
@@ -512,9 +522,9 @@
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="products-grid"></div>
           <nav class="flex justify-center items-center gap-4 mt-12" aria-label="Pagination">
-          <button class="btn-secondary" onclick="changePage(-1)" aria-label="Go to previous page">Previous</button> 
+          <button class="btn-secondary py-2 px-4" onclick="changePage(-1)" aria-label="Go to previous page">Previous</button> 
           <span id="pagination-info" aria-live="polite">Page 1 of 1</span> 
-          <button class="btn-secondary" onclick="changePage(1)" aria-label="Go to next page">Next</button>
+          <button class="btn-secondary py-2 px-4" onclick="changePage(1)" aria-label="Go to next page">Next</button>
       </nav>
      </section>
     </div>
@@ -575,8 +585,7 @@
     <div class="flex gap-4 mt-8">
           <label for="quantity-input" class="sr-only">Quantity</label>
           <input type="number" id="quantity-input" value="1" min="1" max="10" class="w-20 px-3 py-2 border border-gray-300 rounded text-center focus:outline-none focus:border-gray-900" aria-label="Select quantity">
-          <button id="detail-add-to-cart" class="btn-primary flex-1" onclick="addToCart(1, document.getElementById('quantity-input').value)">Add to Cart</button>
-      </div>
+          <button id="detail-add-to-cart" class="btn-primary flex-1">Add to Cart</button> </div>
     <div class="mt-8 pt-6 border-t border-gray-200">
           <h3 class="font-semibold mb-3">Guaranteed Satisfaction</h3>
           <ul class="text-sm text-gray-600 flex flex-wrap gap-x-6 gap-y-2">
@@ -589,6 +598,74 @@
    </div>
    </div>
   </main>
+
+<main id="page-cart" class="page">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <nav class="breadcrumb mb-8" aria-label="Breadcrumb">
+            <a onclick="navigateTo('home')" tabindex="0">Home</a> / 
+            <span aria-current="page">Shopping Cart</span>
+        </nav>
+        <h1 class="text-4xl font-bold mb-8">Shopping Cart</h1>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <section class="lg:col-span-2" aria-labelledby="cart-items-heading">
+                <h2 id="cart-items-heading" class="sr-only">Items in your cart</h2>
+                
+                <div id="cart-items-container" class="space-y-6">
+                    <p id="empty-cart-message" class="text-gray-600 text-lg">Your cart is empty. <a onclick="navigateTo('shop')" class="text-gray-900 underline cursor-pointer">Start shopping now!</a></p>
+                </div>
+
+                <div class="mt-8 pt-6 border-t border-gray-200 flex justify-between">
+                    <button class="btn-secondary py-2 px-4" onclick="navigateTo('shop')">← Continue Shopping</button>
+                    <button class="btn-secondary py-2 px-4" onclick="clearCart()">Clear Cart</button>
+                </div>
+            </section>
+
+            <aside class="lg:col-span-1" aria-labelledby="order-summary-heading">
+                <div class="bg-gray-50 p-6 border border-gray-200 sticky top-24">
+                    <h2 id="order-summary-heading" class="text-2xl font-bold mb-6">Order Summary</h2>
+                    
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between font-medium">
+                            <span>Subtotal (<span id="summary-item-count">0</span> items)</span>
+                            <span id="summary-subtotal">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-700">
+                            <span>Shipping</span>
+                            <span id="summary-shipping">Calculated at checkout</span>
+                        </div>
+                        <div class="flex justify-between text-gray-700">
+                            <span>Taxes</span>
+                            <span id="summary-taxes">$0.00</span>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-300 pt-4 mb-6">
+                        <div class="flex justify-between text-xl font-bold">
+                            <span>Estimated Total</span>
+                            <span id="summary-total">$0.00</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary w-full" onclick="navigateTo('checkout')" aria-label="Proceed to checkout">Proceed to Checkout</button>
+                    
+                    <p class="text-xs text-gray-500 mt-4 text-center">Shipping and taxes calculated based on delivery address.</p>
+
+                    <div class="mt-6">
+                        <h3 class="font-semibold mb-2">Coupon Code</h3>
+                        <div class="flex gap-2">
+                            <label for="coupon-input" class="sr-only">Enter coupon code</label>
+                            <input type="text" id="coupon-input" placeholder="Enter code" class="flex-1 p-2 border border-gray-300 rounded focus:border-gray-900">
+                            <button class="btn-secondary py-2 px-4 text-sm" onclick="applyCoupon()">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+    </div>
+</main>
+
 
 <footer class="bg-gray-900 text-white mt-16 py-12" role="contentinfo">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
