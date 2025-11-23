@@ -58,7 +58,7 @@
         }
 
         /* Page Transition Animations 
-           ✔ Left-to-right + right-to-left page transitions 
+           ✔ Fix Applied: Changed .page to position: relative to fix footer overlap.
         */
         @keyframes slideInFromRight {
             from { opacity: 0.5; transform: translateX(100%); }
@@ -68,15 +68,17 @@
             from { opacity: 0.5; transform: translateX(-100%); }
             to { opacity: 1; transform: translateX(0); }
         }
+        
+        /* FIX: Changed position from absolute to relative to respect document flow and push the footer down. */
         .page {
-            position: absolute; /* Allows pages to overlap during transition */
-            top: 0;
+            position: relative; 
             left: 0;
             width: 100%;
             display: none;
             min-height: calc(100vh - 80px);
             padding-top: 2rem;
             z-index: 10; 
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s;
         }
         .page.active {
             display: block;
