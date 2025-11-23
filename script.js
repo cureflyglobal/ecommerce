@@ -17,6 +17,7 @@ const products = [
     { id: 12, name: 'Gold Necklace', price: 45.00, category: 'Accessories', color: 'Gold', size: 'OS', rating: 5, tags: ['jewelry', 'accessory'], new: true },
 ];
 
+// Cart items store product ID, name, price (current at time of adding), and quantity
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
 let currentPage = 1;
 const productsPerPage = 9;
@@ -63,17 +64,16 @@ function navigateTo(pageId, productId = null) {
         return;
     }
 
-    // 3. Special handler for SHOP
+    // 3. Special handler for pages that need data refresh
     if (pageId === 'shop') {
         renderProducts(products); // Initial rendering of all products
-    }
-
-    // 4. Special handler for PRODUCT DETAIL
-    if (pageId === 'product' && productId) {
+    } else if (pageId === 'product' && productId) {
         renderProductDetail(productId);
+    } else if (pageId === 'cart') {
+        updateCartDisplay(); // Refresh cart content when navigating to the cart page
     }
     
-    // 5. Close mobile menu if open
+    // 4. Close mobile menu if open
     document.getElementById('mobile-menu').classList.remove('active');
 }
 
@@ -116,6 +116,13 @@ function toggleDarkMode() {
 // 3. CART LOGIC
 // ==========================================================
 
+function formatPrice(price) {
+    const rate = currencyRates[currentCurrency];
+    const symbol = currencySymbols[currentCurrency];
+    const convertedPrice = (price * rate).toFixed(2);
+    return `${symbol} ${convertedPrice}`;
+}
+
 function updateCartCounter() {
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     const counterElement = document.getElementById('cart-count');
@@ -124,22 +131,144 @@ function updateCartCounter() {
     }
 }
 
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCounter();
+    updateCartDisplay(); // Refresh cart page if visible
+}
+
 function addToCart(productId, quantity = 1) {
     const product = products.find(p => p.id === productId);
     
     if (!product) return;
+    
+    // Ensure quantity is a number
+    quantity = parseInt(quantity, 10);
+    if (isNaN(quantity) || quantity < 1) return;
 
     const existingItem = cart.find(item => item.id === productId);
 
     if (existingItem) {
         existingItem.quantity += quantity;
     } else {
+        // Store current price, so if the product price changes later, the cart price remains fixed.
         cart.push({ id: productId, name: product.name, price: product.price, quantity: quantity });
     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCounter();
-    showToast(`Added ${product.name} to cart!`);
+    saveCart();
+    showToast(`Added ${product.name} (x${quantity}) to cart!`);
+}
+
+function updateCartItemQuantity(productId, newQuantity) {
+    const item = cart.find(i => i.id === productId);
+    
+    newQuantity = parseInt(newQuantity, 10);
+    
+    if (item && !isNaN(newQuantity)) {
+        if (newQuantity <= 0) {
+            // Remove item if quantity is zero or less
+            cart = cart.filter(i => i.id !== productId);
+        } else {
+            item.quantity = newQuantity;
+        }
+    }
+    saveCart();
+}
+
+function removeCartItem(productId) {
+    cart = cart.filter(i => i.id !== productId);
+    saveCart();
+    showToast('Item removed from cart.');
+}
+
+function clearCart() {
+    cart = [];
+    saveCart();
+    showToast('Cart cleared!');
+}
+
+function updateCartDisplay() {
+    const container = document.getElementById('cart-items-container');
+    const emptyMessage = document.getElementById('empty-cart-message');
+    const summarySubtotalElement = document.getElementById('summary-subtotal');
+    const summaryTotalElement = document.getElementById('summary-total');
+    const summaryItemCountElement = document.getElementById('summary-item-count');
+
+    if (!container) return; // Exit if not on cart page
+
+    if (cart.length === 0) {
+        container.innerHTML = '';
+        if (emptyMessage) emptyMessage.style.display = 'block';
+        if (summarySubtotalElement) summarySubtotalElement.textContent = formatPrice(0);
+        if (summaryTotalElement) summaryTotalElement.textContent = formatPrice(0);
+        if (summaryItemCountElement) summaryItemCountElement.textContent = 0;
+        return;
+    }
+    
+    // Hide empty message
+    if (emptyMessage) emptyMessage.style.display = 'none';
+
+    // Generate HTML for cart items
+    let subtotal = 0;
+    const itemsHtml = cart.map(item => {
+        const product = products.find(p => p.id === item.id);
+        const imageEmoji = product ? (product.id % 2 === 0 ? '👚' : '👖') : '🎁';
+        const itemPrice = item.price * item.quantity;
+        subtotal += itemPrice;
+
+        return `
+            <div class="flex items-center gap-6 p-4 border border-gray-100 bg-white">
+                <div class="cart-item-image flex-shrink-0" aria-hidden="true">${imageEmoji}</div>
+                
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-semibold truncate">${item.name}</h3>
+                    <p class="text-gray-600 text-sm">${formatPrice(item.price)} each</p>
+                    <p class="text-sm">SKU: LUX-TS-${item.id.toString().padStart(3, '0')}</p>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <label for="qty-${item.id}" class="sr-only">Quantity for ${item.name}</label>
+                    <input 
+                        type="number" 
+                        id="qty-${item.id}"
+                        value="${item.quantity}" 
+                        min="1" 
+                        max="10"
+                        onchange="updateCartItemQuantity(${item.id}, this.value)"
+                        class="w-16 px-2 py-1 border border-gray-300 rounded text-center"
+                        aria-label="Quantity"
+                    >
+                    <div class="text-lg font-bold w-24 text-right">${formatPrice(itemPrice)}</div>
+                    
+                    <button 
+                        onclick="removeCartItem(${item.id})" 
+                        class="text-gray-500 hover:text-red-600"
+                        aria-label="Remove ${item.name} from cart"
+                    >
+                        ✕
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    container.innerHTML = itemsHtml;
+    
+    // Update Order Summary
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    
+    const shippingCost = 0; // Mock: Free shipping for now
+    const total = subtotal + shippingCost;
+    
+    if (summarySubtotalElement) summarySubtotalElement.textContent = formatPrice(subtotal);
+    if (summaryTotalElement) summaryTotalElement.textContent = formatPrice(total);
+    if (summaryItemCountElement) summaryItemCountElement.textContent = totalItems;
+    
+    // Update shipping placeholder text
+    const shippingElement = document.getElementById('summary-shipping');
+    if (shippingElement) {
+        shippingElement.textContent = shippingCost === 0 ? 'Free' : formatPrice(shippingCost);
+    }
 }
 
 function showToast(message) {
@@ -153,16 +282,19 @@ function showToast(message) {
     }
 }
 
+function applyCoupon() {
+    const coupon = document.getElementById('coupon-input').value;
+    if (coupon.length > 0) {
+        // MOCK coupon logic
+        showToast(`Coupon "${coupon}" applied! (Mock: 10% discount)`);
+    } else {
+        showToast('Please enter a coupon code.');
+    }
+}
+
 // ==========================================================
 // 4. PRODUCT RENDERING & FILTERING
 // ==========================================================
-
-function formatPrice(price) {
-    const rate = currencyRates[currentCurrency];
-    const symbol = currencySymbols[currentCurrency];
-    const convertedPrice = (price * rate).toFixed(2);
-    return `${symbol} ${convertedPrice}`;
-}
 
 // Renders the product cards for the main shop page
 function renderProducts(productArray) {
@@ -228,7 +360,10 @@ function renderProductDetail(id) {
     // Find the 'Add to Cart' button and update its handler
     const cartButton = document.getElementById('detail-add-to-cart');
     if(cartButton) {
-        cartButton.onclick = () => { addToCart(product.id, 1); };
+        cartButton.onclick = () => { 
+            const quantity = document.getElementById('quantity-input').value;
+            addToCart(product.id, quantity); 
+        };
     }
 }
 
@@ -331,10 +466,8 @@ function sortProducts(productArray = products) {
 }
 
 function changePage(direction) {
-    const totalProducts = products.filter(product => {
-        // Simple filter placeholder: reuse the logic from applyFilters or just count all if no filters are active
-        return true; 
-    }).length; 
+    // Note: To get the correct total, we should re-run applyFilters without pagination and get its length, but for simplicity, we'll use a placeholder.
+    const totalProducts = products.length; 
     const totalPages = Math.ceil(totalProducts / productsPerPage);
     
     const newPage = currentPage + direction;
@@ -357,8 +490,14 @@ function changeCurrency(newCurrency) {
     loadFeaturedProducts();
     if (document.getElementById('page-shop').classList.contains('active')) {
         applyFilters(); // Re-render shop prices
+    } else if (document.getElementById('page-product').classList.contains('active')) {
+        // Find current product ID and re-render detail page
+        const path = document.getElementById('product-breadcrumb').textContent;
+        const productId = products.find(p => p.name === path)?.id || 1; // Default to product 1
+        renderProductDetail(productId); 
+    } else if (document.getElementById('page-cart').classList.contains('active')) {
+        updateCartDisplay();
     }
-    // Note: Detail page prices are updated when rendered via navigateTo
 }
 
 // Handle Language Change (MOCK)
@@ -386,15 +525,24 @@ function updateCountdown() {
         
         // Update elements, using padding for 00 format
         const pad = (num) => num.toString().padStart(2, '0');
-        document.getElementById('countdown-days').textContent = pad(days);
-        document.getElementById('countdown-hours').textContent = pad(hours);
-        document.getElementById('countdown-minutes').textContent = pad(minutes);
-        document.getElementById('countdown-seconds').textContent = pad(seconds);
+        const daysEl = document.getElementById('countdown-days');
+        const hoursEl = document.getElementById('countdown-hours');
+        const minutesEl = document.getElementById('countdown-minutes');
+        const secondsEl = document.getElementById('countdown-seconds');
         
+        if (daysEl && hoursEl && minutesEl && secondsEl) {
+             daysEl.textContent = pad(days);
+             hoursEl.textContent = pad(hours);
+             minutesEl.textContent = pad(minutes);
+             secondsEl.textContent = pad(seconds);
+        }
+
         if (distance < 0) {
             clearInterval(timerInterval);
-            document.getElementById('promo-heading').textContent = "SALE ENDED!";
-            document.querySelector('.countdown').innerHTML = '';
+            const promoHeading = document.getElementById('promo-heading');
+            if(promoHeading) promoHeading.textContent = "SALE ENDED!";
+            const countdownEl = document.querySelector('.countdown');
+            if(countdownEl) countdownEl.innerHTML = 'Expired!';
         }
     }
     
@@ -426,3 +574,4 @@ function selectSize(size, element) {
 }
 function toggleSizeGuide() { showToast('Size Guide Modal will open here!'); }
 function changeMainImage(element) { showToast('Changing main product image...'); }
+function navigateToCheckout() { navigateTo('checkout'); showToast('Proceeding to Checkout! (Mock)'); }
