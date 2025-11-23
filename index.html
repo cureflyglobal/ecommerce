@@ -1,187 +1,632 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[Your Premium Template] - Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <meta name="description" content="A complete, high-performance static e-commerce template.">
-</head>
-<body>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Luxury Fashion Boutique - Premium Fashion E-Commerce</title>
+  <meta name="description" content="Discover premium luxury fashion with our curated collection of designer clothing and accessories">
+  <meta name="keywords" content="luxury fashion, designer clothing, premium fashion, online boutique">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* NOTE: ALL custom CSS was moved here from the separate <style> block 
+       in your original submission. You should move this to a separate style.css
+       file for production, but it is kept inline here for a single file test. 
+       
+       For your GitHub repo, ensure these styles are also in your main style.css.
+    */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <div class="announcement-bar" role="complementary">
-        <p class="lang-text" data-lang-key="announcement">✦ FREE SHIPPING WORLDWIDE ON ALL ORDERS ✦</p>
+    html, body {
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    /* Page Transition Animations */
+    .page {
+      display: none;
+      animation-duration: 0.5s;
+      animation-fill-mode: both;
+      min-height: 100%;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes slideInRight {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .slide-in-right {
+      animation-name: slideInRight;
+    }
+
+    /* Navigation Styles */
+    .nav-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .nav-link {
+      color: #1a1a1a;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .nav-link:hover {
+      color: #8b7355;
+      transform: translateY(-2px);
+    }
+
+    /* Button Styles */
+    .btn-primary {
+      background: #1a1a1a;
+      color: #ffffff;
+      padding: 0.875rem 2rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .btn-primary:hover {
+      background: #333333;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #1a1a1a;
+      padding: 0.875rem 2rem;
+      border: 2px solid #1a1a1a;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.875rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .btn-secondary:hover {
+      background: #1a1a1a;
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    /* Product Card Styles */
+    .product-card {
+      transition: all 0.4s ease;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      transition: transform 0.6s ease;
+      background: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+
+    .product-card:hover .product-image {
+      transform: scale(1.08);
+    }
+
+    /* Search Styles */
+    .search-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-top: none;
+      max-height: 300px;
+      overflow-y: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+
+    /* Cart Badge */
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #dc2626;
+      color: #ffffff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90%;
+      overflow-y: auto;
+      position: relative;
+      animation: slideInRight 0.3s ease;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1a1a1a;
+      color: #ffffff;
+      padding: 1rem 1.5rem;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 3000;
+      animation: slideInRight 0.3s ease;
+      display: none;
+    }
+
+    .toast.active {
+      display: block;
+    }
+
+    /* Dark Mode */
+    body.dark-mode {
+      background: #1a1a1a;
+      color: #ffffff;
+    }
+
+    body.dark-mode .nav-header {
+      background: #1a1a1a;
+      border-bottom-color: #333;
+    }
+
+    body.dark-mode .nav-link {
+      color: #ffffff;
+    }
+
+    body.dark-mode .btn-primary {
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #ffffff;
+        z-index: 1500;
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      .mobile-menu.active {
+        display: block;
+        animation: slideInRight 0.3s ease;
+      }
+    }
+    /* Countdown Timer */
+    .countdown-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    /* Admin Dashboard Styles (partial) */
+    .stat-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #ffffff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    /* Review Stars */
+    .stars {
+      color: #fbbf24;
+      font-size: 1rem;
+    }
+    /* Accessibility Focus */
+    *:focus-visible {
+      outline: 2px solid #8b7355;
+      outline-offset: 2px;
+    }
+  </style>
+  <script src="script.js" type="text/javascript" defer></script>
+ </head>
+ <body>
+<a href="#main-content" class="skip-link">Skip to main content</a> 
+
+<div id="toast-notification" class="toast" role="status" aria-live="polite"></div>
+
+  <header>
+   <nav class="nav-header" role="navigation" aria-label="Main navigation">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+         <div class="flex items-center justify-between py-2 text-sm border-b border-gray-200">
+      <div class="flex items-center gap-4">
+          <span>📧 <a href="mailto:support@luxuryfashion.com" class="hover:underline">support@luxuryfashion.com</a></span> 
+          <span>📞 <a href="tel:+15551234567" class="hover:underline">+1 (555) 123-4567</a></span>
+      </div>
+      <div class="flex items-center gap-4">
+          <button onclick="toggleDarkMode()" class="nav-link" aria-label="Toggle dark mode">🌙</button> 
+          <label for="currency-select" class="sr-only">Select currency</label> 
+          <select id="currency-select" class="border-none bg-transparent cursor-pointer" onchange="changeCurrency(this.value)" aria-label="Currency selector"> 
+              <option value="USD">USD $</option> 
+              <option value="EUR">EUR €</option> 
+              <option value="GBP">GBP £</option> 
+              <option value="INR">INR ₹</option> 
+          </select> 
+          <label for="language-select" class="sr-only">Select language</label> 
+          <select id="language-select" class="border-none bg-transparent cursor-pointer" onchange="changeLanguage(this.value)" aria-label="Language selector"> 
+              <option value="en">EN</option> 
+              <option value="fr">FR</option> 
+              <option value="es">ES</option> 
+              <option value="de">DE</option> 
+              <option value="hi">HI</option> 
+          </select>
+      </div>
+     </div>
+         <div class="flex items-center justify-between py-4">
+          <button class="md:hidden text-2xl" onclick="toggleMobileMenu()" aria-label="Open menu" aria-expanded="false">☰</button>
+          <div class="text-2xl font-bold cursor-pointer" onclick="navigateTo('home')" tabindex="0" role="link" aria-label="Go to homepage">
+              <span id="brand-name">LUXE</span>
+          </div>
+      <div class="flex-1"></div>
+      <div class="flex-1 max-w-xl mx-8">
+       <div class="search-container" role="search">
+              <label for="search-input" class="sr-only">Search products</label> 
+              <input type="search" id="search-input" placeholder="Search for products, brands, or categories..." class="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-900" oninput="handleSearch(event)" aria-autocomplete="list" aria-controls="search-suggestions">
+        <div id="search-suggestions" class="search-suggestions" role="listbox"></div>
+       </div>
+      </div>
+      <div class="flex items-center gap-4">
+          <button onclick="navigateTo('account')" class="nav-link" aria-label="My account">👤</button> 
+          <button onclick="toggleWishlist()" class="nav-link" aria-label="Wishlist">❤️</button> 
+          <button onclick="navigateTo('cart')" class="nav-link relative" aria-label="Shopping cart"> 
+              🛒 
+              <span id="cart-count" class="cart-badge" aria-live="polite">0</span> 
+          </button>
+      </div>
+     </div>
+    </div>
+   </nav>
+  </header>
+
+  <aside id="mobile-menu" class="mobile-menu" role="navigation" aria-label="Mobile menu">
+    <button onclick="toggleMobileMenu()" class="text-2xl mb-8 absolute top-4 right-6" aria-label="Close menu">✕</button>
+   <nav class="flex flex-col gap-6 pt-16">
+        <a onclick="navigateTo('home')" class="nav-link text-xl font-semibold hover:text-gray-900">Home</a>
+        <a onclick="navigateTo('shop')" class="nav-link text-xl font-semibold hover:text-gray-900">Shop</a>
+        <a onclick="navigateTo('account')" class="nav-link text-xl font-semibold hover:text-gray-900">Account</a>
+        <a onclick="navigateTo('cart')" class="nav-link text-xl font-semibold hover:text-gray-900">Cart</a>
+        <a href="admin.html" class="nav-link text-xl font-semibold hover:text-gray-900">Admin Login</a>
+    </nav>
+  </aside>
+
+  <main id="page-home" class="page active" role="main">
+       <section class="relative" style="height: 90vh;" aria-labelledby="hero-title">
+    <div class="absolute inset-0 bg-gradient-to-r from-gray-900 to-gray-700 flex items-center justify-center text-white text-center px-4">
+     <div>
+      <h1 id="hero-title" class="text-5xl md:text-7xl font-bold mb-4">SPRING/SUMMER 2024</h1>
+      <p id="hero-subtitle" class="text-xl md:text-2xl mb-8">Discover Timeless Elegance</p>
+          <button class="btn-primary" onclick="navigateTo('shop')">Shop Collection</button>
+     </div>
+    </div>
+   </section>
+       <section class="bg-black text-white py-6 text-center" aria-labelledby="promo-heading">
+    <h2 id="promo-heading" class="text-2xl font-bold mb-2">⚡ FLASH SALE - 30% OFF</h2>
+    <p class="mb-4">Limited Time Offer - Don't Miss Out!</p>
+    <div class="countdown" role="timer" aria-live="polite" aria-atomic="true">
+     <div class="countdown-item">
+      <div class="countdown-value" id="countdown-days" aria-label="Days">00</div>
+      <div class="countdown-label">Days</div>
+     </div>
+     <div class="countdown-item">
+      <div class="countdown-value" id="countdown-hours" aria-label="Hours">00</div>
+      <div class="countdown-label">Hours</div>
+     </div>
+     <div class="countdown-item">
+      <div class="countdown-value" id="countdown-minutes" aria-label="Minutes">00</div>
+      <div class="countdown-label">Minutes</div>
+     </div>
+     <div class="countdown-item">
+      <div class="countdown-value" id="countdown-seconds" aria-label="Seconds">00</div>
+      <div class="countdown-label">Seconds</div>
+     </div>
+    </div>
+   </section>
+       <section class="max-w-7xl mx-auto px-4 py-16" aria-labelledby="categories-heading">
+    <h2 id="categories-heading" class="text-3xl font-bold text-center mb-12">Shop by Category</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+     <article class="product-card text-center" onclick="filterByCategory('Women')" tabindex="0" role="button" aria-label="Shop women's fashion">
+      <div class="product-image" aria-hidden="true">👗</div>
+      <h3 class="text-xl font-semibold mt-4">Women's Fashion</h3>
+      <p class="text-gray-600 mt-2">Explore Collection →</p>
+     </article>
+     <article class="product-card text-center" onclick="filterByCategory('Men')" tabindex="0" role="button" aria-label="Shop men's fashion">
+      <div class="product-image" aria-hidden="true">👔</div>
+      <h3 class="text-xl font-semibold mt-4">Men's Fashion</h3>
+      <p class="text-gray-600 mt-2">Explore Collection →</p>
+     </article>
+     <article class="product-card text-center" onclick="filterByCategory('Accessories')" tabindex="0" role="button" aria-label="Shop accessories">
+      <div class="product-image" aria-hidden="true">👜</div>
+      <h3 class="text-xl font-semibold mt-4">Accessories</h3>
+      <p class="text-gray-600 mt-2">Explore Collection →</p>
+     </article>
+    </div>
+   </section>
+       <section class="bg-gray-50 py-16" aria-labelledby="collection-heading">
+    <div class="max-w-7xl mx-auto px-4">
+     <h2 id="collection-title" class="text-3xl font-bold text-center mb-12">New Arrivals</h2>
+     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="featured-products"></div>
+     <div class="text-center mt-12"><button class="btn-primary" onclick="navigateTo('shop')">View All Products</button>
+     </div>
+    </div>
+   </section>
+       <section class="max-w-7xl mx-auto px-4 py-16" aria-labelledby="testimonials-heading">
+    <h2 id="testimonials-heading" class="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+     <article class="text-center p-6 bg-white border border-gray-200">
+      <div class="stars mb-4" aria-label="5 out of 5 stars">★★★★★</div>
+      <p class="text-gray-600 mb-4">"Absolutely love the quality and design. Best purchase I've made this year!"</p>
+      <p class="font-semibold">- Sarah Johnson</p>
+     </article>
+     <article class="text-center p-6 bg-white border border-gray-200">
+      <div class="stars mb-4" aria-label="5 out of 5 stars">★★★★★</div>
+      <p class="text-gray-600 mb-4">"Fast shipping and excellent customer service. Highly recommend!"</p>
+      <p class="font-semibold">- Michael Chen</p>
+     </article>
+     <article class="text-center p-6 bg-white border border-gray-200">
+      <div class="stars mb-4" aria-label="5 out of 5 stars">★★★★★</div>
+      <p class="text-gray-600 mb-4">"The fabric quality is exceptional. Worth every penny!"</p>
+      <p class="font-semibold">- Emma Davis</p>
+     </article>
+    </div>
+   </section>
+  </main>
+
+  <main id="page-shop" class="page">
+   <div class="max-w-7xl mx-auto px-4 py-8">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a onclick="navigateTo('home')" tabindex="0">Home</a> / 
+        <span aria-current="page">Shop</span>
+    </nav>
+    <h1 class="text-4xl font-bold mb-8">All Products</h1>
+    <div class="flex flex-col md:flex-row gap-8">
+         <aside class="w-full md:w-64 flex-shrink-0" role="complementary" aria-label="Product filters">
+      <div class="bg-white p-6 border border-gray-200">
+       <h2 class="text-xl font-bold mb-4">Filters</h2>
+               <fieldset class="filter-group">
+            <legend class="font-semibold mb-2">Category</legend> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Women"> Women </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Men"> Men </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="category" value="Accessories"> Accessories </label>
+       </fieldset>
+               <fieldset class="filter-group">
+            <legend class="font-semibold mb-2">Price Range</legend> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="0-50"> Under $50 </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="50-100"> $50 - $100 </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="100-200"> $100 - $200 </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="price" value="200-99999"> Over $200 </label>
+       </fieldset>
+               <fieldset class="filter-group">
+            <legend class="font-semibold mb-2">Color</legend> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Black"> Black </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="White"> White </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Blue"> Blue </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="color" value="Red"> Red </label>
+       </fieldset>
+               <fieldset class="filter-group">
+            <legend class="font-semibold mb-2">Size</legend> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="XS"> XS </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="S"> S </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="M"> M </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="L"> L </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="size" value="XL"> XL </label>
+       </fieldset>
+               <fieldset class="filter-group">
+            <legend class="font-semibold mb-2">Rating</legend> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="rating" value="4"> 4★ &amp; above </label> 
+            <label class="filter-option"> <input type="checkbox" onchange="applyFilters()" data-filter="rating" value="3"> 3★ &amp; above </label>
+       </fieldset>
+          <button class="btn-secondary w-full mt-4" onclick="clearFilters()">Clear All Filters</button>
+      </div>
+     </aside>
+         <section class="flex-1" aria-labelledby="products-heading">
+      <div class="flex justify-between items-center mb-6">
+       <p id="product-count" class="text-gray-600" aria-live="polite">Showing 0 products</p>
+       <div>
+            <label for="sort-select" class="sr-only">Sort products by</label> 
+            <select id="sort-select" class="border border-gray-300 px-4 py-2" onchange="sortProducts()"> 
+                <option value="newest">Newest</option> 
+                <option value="price-low">Price: Low to High</option> 
+                <option value="price-high">Price: High to Low</option> 
+                <option value="popular">Most Popular</option> 
+                <option value="rating">Highest Rated</option> 
+            </select>
+       </div>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" id="products-grid"></div>
+          <nav class="flex justify-center items-center gap-4 mt-12" aria-label="Pagination">
+          <button class="btn-secondary" onclick="changePage(-1)" aria-label="Go to previous page">Previous</button> 
+          <span id="pagination-info" aria-live="polite">Page 1 of 1</span> 
+          <button class="btn-secondary" onclick="changePage(1)" aria-label="Go to next page">Next</button>
+      </nav>
+     </section>
+    </div>
+   </div>
+  </main>
+
+  <main id="page-product" class="page">
+   <div class="max-w-7xl mx-auto px-4 py-8">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a onclick="navigateTo('home')" tabindex="0">Home</a> / 
+        <a onclick="navigateTo('shop')" tabindex="0">Shop</a> / 
+        <span id="product-breadcrumb" aria-current="page">Product</span>
+    </nav>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+         <div>
+      <div id="main-product-image" class="product-image mb-4 cursor-pointer" onclick="zoomImage()" tabindex="0" role="button" aria-label="Zoom product image">
+       👕
+      </div>
+      <div class="grid grid-cols-4 gap-4" role="tablist" aria-label="Product image gallery">
+          <button class="product-image cursor-pointer" style="height: 100px;" onclick="changeMainImage(this)" role="tab" aria-label="View image 1">👕</button> 
+          <button class="product-image cursor-pointer" style="height: 100px;" onclick="changeMainImage(this)" role="tab" aria-label="View image 2">👕</button> 
+          <button class="product-image cursor-pointer" style="height: 100px;" onclick="changeMainImage(this)" role="tab" aria-label="View image 3">👕</button> 
+          <button class="product-image cursor-pointer" style="height: 100px;" onclick="changeMainImage(this)" role="tab" aria-label="View image 4">👕</button>
+      </div>
+     </div>
+         <div>
+      <h1 id="product-title" class="text-4xl font-bold mb-4">Premium Cotton T-Shirt</h1>
+      <div class="flex items-center gap-4 mb-4">
+       <div class="stars text-2xl" aria-label="Rating: 5 out of 5 stars">★★★★★</div>
+          <button onclick="showReviews()" class="text-gray-600 hover:underline">(127 reviews)</button>
+      </div>
+      <p id="product-price" class="text-3xl font-bold mb-4">$89.00</p>
+      <p id="product-sku" class="text-sm text-gray-600 mb-4">SKU: LUX-TS-001</p>
+      <p id="product-stock" class="text-green-600 mb-6" role="status">✓ In Stock (24 units available)</p>
+      <p id="product-description" class="text-gray-700 mb-8">Crafted from premium organic cotton, this t-shirt offers unparalleled comfort and style. Perfect for both casual and semi-formal occasions. Features include a modern fit, reinforced seams, and eco-friendly dyes.</p>
+          <fieldset class="mb-6">
+          <legend class="font-semibold mb-3">Color: <span id="selected-color">Black</span></legend>
+       <div class="flex gap-3" role="radiogroup" aria-label="Available colors">
+            <button class="w-10 h-10 bg-black border-2 border-gray-900" onclick="selectColor('Black', this)" aria-label="Select black color" role="radio" aria-checked="true"></button> 
+            <button class="w-10 h-10 bg-white border border-gray-300" onclick="selectColor('White', this)" aria-label="Select white color" role="radio" aria-checked="false"></button> 
+            <button class="w-10 h-10 bg-blue-600 border border-gray-300" onclick="selectColor('Blue', this)" aria-label="Select blue color" role="radio" aria-checked="false"></button> 
+            <button class="w-10 h-10 bg-gray-400 border border-gray-300" onclick="selectColor('Gray', this)" aria-label="Select gray color" role="radio" aria-checked="false"></button>
+       </div>
+      </fieldset>
+          <fieldset class="mb-6">
+       <div class="flex justify-between items-center mb-3">
+            <legend class="font-semibold">Size: <span id="selected-size">M</span></legend> 
+            <button class="text-sm underline" onclick="toggleSizeGuide()">Size Guide</button>
+       </div>
+       <div class="flex gap-3" role="radiogroup" aria-label="Available sizes">
+            <button class="btn-secondary py-2 px-4" onclick="selectSize('XS', this)" role="radio" aria-checked="false">XS</button> 
+            <button class="btn-secondary py-2 px-4" onclick="selectSize('S', this)" role="radio" aria-checked="false">S</button>
+            <button class="btn-secondary py-2 px-4" onclick="selectSize('M', this)" role="radio" aria-checked="true">M</button>
+            <button class="btn-secondary py-2 px-4" onclick="selectSize('L', this)" role="radio" aria-checked="false">L</button>
+            <button class="btn-secondary py-2 px-4" onclick="selectSize('XL', this)" role="radio" aria-checked="false">XL</button>
+       </div>
+      </fieldset>
+    <div class="flex gap-4 mt-8">
+          <label for="quantity-input" class="sr-only">Quantity</label>
+          <input type="number" id="quantity-input" value="1" min="1" max="10" class="w-20 px-3 py-2 border border-gray-300 rounded text-center focus:outline-none focus:border-gray-900" aria-label="Select quantity">
+          <button id="detail-add-to-cart" class="btn-primary flex-1" onclick="addToCart(1, document.getElementById('quantity-input').value)">Add to Cart</button>
+      </div>
+    <div class="mt-8 pt-6 border-t border-gray-200">
+          <h3 class="font-semibold mb-3">Guaranteed Satisfaction</h3>
+          <ul class="text-sm text-gray-600 flex flex-wrap gap-x-6 gap-y-2">
+              <li>✓ Free 30-Day Returns</li>
+              <li>✓ Secure Payment</li>
+              <li>✓ Certified Organic Cotton</li>
+          </ul>
+      </div>
     </div>
+   </div>
+   </div>
+  </main>
 
-    <header class="header" role="banner">
-        <div class="header-container">
-            <h1 class="logo">[YOUR SHOP NAME]</h1>
-            <nav class="main-nav" role="navigation">
-                <ul>
-                    <li><a href="index.html" class="lang-text" data-lang-key="home">Home</a></li>
-                    <li><a href="#all-products-section" class="lang-text" data-lang-key="shop">Shop</a></li>
-                    <li><a href="#cart-section" class="lang-text" data-lang-key="cart">Cart</a></li>
-                    <li><a href="#account-section" class="lang-text" data-lang-key="account">Account</a></li>
-                    <li><a href="admin.html" class="lang-text admin-link" data-lang-key="admin">Admin</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <button class="lang-switcher" data-lang="en">EN</button>
-                <button class="lang-switcher" data-lang="es">ES</button>
-                <button class="icon-button" aria-label="Search" role="button">🔍</button>
-                <button class="icon-button" aria-label="Wishlist" role="button">♡</button>
-                <a href="#cart-section" class="icon-button cart-icon" aria-label="Shopping Cart">
-                    🛒 <span id="cart-counter" aria-live="polite">0</span>
-                </a>
-            </div>
+<footer class="bg-gray-900 text-white mt-16 py-12" role="contentinfo">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div>
+            <h3 class="text-xl font-bold mb-4">LUXE</h3>
+            <p class="text-sm text-gray-400">Timeless elegance, redefined for the modern connoisseur.</p>
         </div>
-    </header>
-
-    <main role="main">
-        <section class="hero" role="region" aria-label="Main Banner">
-            <div class="hero-content">
-                <h2 class="lang-text" data-lang-key="hero_title">Complete E-commerce Template</h2>
-                <p class="lang-text" data-lang-key="hero_subtitle">A fully-featured static template with all essential pages for fast deployment.</p>
-                <a href="#all-products-section" class="button lang-text" data-lang-key="shop_now">Shop Now</a>
-            </div>
-            <img src="placeholder-hero.jpg" alt="Fashion and Style Hero Image" loading="lazy">
-        </section>
-
-        <section class="featured-products" role="region" aria-labelledby="featured-heading">
-            <h3 id="featured-heading" class="lang-text" data-lang-key="featured_title">Featured Products</h3>
-            <p class="lang-text" data-lang-key="featured_subtitle">Handpicked selections for you</p>
-            <div class="product-grid">
-                <div class="product-card" data-category="outerwear" data-price="299" data-rating="5">
-                    <img src="placeholder-coat.jpg" alt="Premium Wool Coat Placeholder" loading="lazy">
-                    <h4 class="product-title lang-text" data-lang-key="product_1_title">Premium Wool Coat</h4>
-                    <p class="product-category lang-text" data-lang-key="product_1_category">Outerwear</p>
-                    <p class="product-price">$299</p>
-                    <button class="button add-to-cart" data-product-id="1">Add to Cart</button>
-                </div>
-                </div>
-        </section>
-
-        <section class="all-products" id="all-products-section" role="region" aria-labelledby="all-products-heading">
-            <h3 id="all-products-heading" class="lang-text" data-lang-key="all_products_title">All Products</h3>
-            <p class="lang-text" data-lang-key="all_products_subtitle">Explore our complete collection</p>
-
-            <div class="controls-bar">
-                <div class="filters">
-                    <button class="filter-btn active" data-filter="all" aria-label="Show All Products">All</button>
-                    <button class="filter-btn" data-filter="dresses" aria-label="Filter by Dresses">Dresses</button>
-                    <button class="filter-btn" data-filter="outerwear" aria-label="Filter by Outerwear">Outerwear</button>
-                    <button class="filter-btn" data-filter="accessories" aria-label="Filter by Accessories">Accessories</button>
-                </div>
-                <div class="sorting">
-                    <label for="sort-select" class="lang-text" data-lang-key="sort_by">Sort By:</label>
-                    <select id="sort-select" aria-label="Sort Products">
-                        <option value="default" class="lang-text" data-lang-key="sort_default">Default</option>
-                        <option value="price-asc" class="lang-text" data-lang-key="sort_price_asc">Price: Low to High</option>
-                        <option value="price-desc" class="lang-text" data-lang-key="sort_price_desc">Price: High to Low</option>
-                        <option value="rating-desc" class="lang-text" data-lang-key="sort_rating_desc">Rating</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="product-grid" id="product-list">
-                <div class="product-card" data-category="outerwear" data-price="299" data-rating="4.5">
-                    <img src="placeholder-coat.jpg" alt="Premium Wool Coat" loading="lazy">
-                    <h4 class="product-title">Premium Wool Coat</h4>
-                    <p class="product-price">$299</p>
-                    <div class="rating" aria-label="Rating: 4 and a half stars">★★★★☆</div>
-                    <button class="button add-to-cart" data-product-id="1">Add to Cart</button>
-                </div>
-                <div class="product-card" data-category="dresses" data-price="249" data-rating="5">
-                    <img src="placeholder-dress.jpg" alt="Silk Evening Dress" loading="lazy">
-                    <h4 class="product-title">Silk Evening Dress</h4>
-                    <p class="product-price">$249</p>
-                    <div class="rating" aria-label="Rating: 5 stars">★★★★★</div>
-                    <button class="button add-to-cart" data-product-id="2">Add to Cart</button>
-                </div>
-                 <div class="product-card" data-category="accessories" data-price="350" data-rating="4">
-                    <img src="placeholder-bag.jpg" alt="Leather Tote Bag" loading="lazy">
-                    <h4 class="product-title">Leather Tote Bag</h4>
-                    <p class="product-price">$350</p>
-                    <div class="rating" aria-label="Rating: 4 stars">★★★★☆</div>
-                    <button class="button add-to-cart" data-product-id="3">Add to Cart</button>
-                </div>
-                </div>
-        </section>
-
-        <section class="product-detail-mockup" role="region" aria-labelledby="detail-heading">
-             <h3 id="detail-heading" class="lang-text" data-lang-key="detail_title">Product Detail Mockup (Silk Evening Dress)</h3>
-             <div class="product-container">
-                <div class="product-gallery">
-                    <img src="placeholder-dress.jpg" alt="Primary view of the Silk Evening Dress" loading="lazy">
-                    </div>
-
-                <div class="product-info">
-                    <h4 class="lang-text" data-lang-key="product_2_title">Silk Evening Dress</h4>
-                    <p class="product-price">$249</p>
-                    <p class="product-description lang-text" data-lang-key="product_detail_desc">Luxurious silk dress perfect for any evening occasion. Features a minimalist design with a flattering silhouette.</p>
-                    <div class="size-selector">
-                        <label for="size-select">Size:</label>
-                        <select id="size-select" aria-label="Select Size">
-                            <option>S</option><option>M</option><option>L</option>
-                        </select>
-                    </div>
-                    <button class="button add-to-cart" data-product-id="2">Add to Cart</button>
-
-                    <div class="reviews" role="group" aria-label="Customer Reviews">
-                        <h5 class="lang-text" data-lang-key="reviews_title">Customer Reviews (3)</h5>
-                        <div class="review-item">
-                            <div class="rating">★★★★★</div>
-                            <p class="review-text">"Amazing quality and perfect fit! Highly recommend."</p>
-                            <p class="review-author">— Buyer A</p>
-                        </div>
-                         </div>
-                </div>
-             </div>
-
-            <div class="related-products" role="group" aria-labelledby="related-heading">
-                <h4 id="related-heading" class="lang-text" data-lang-key="related_title">Related Products</h4>
-                <div class="product-grid related-grid">
-                     </div>
-            </div>
-        </section>
-
-
-        <section class="cart-section" id="cart-section" role="region" aria-labelledby="cart-heading">
-             <h3 id="cart-heading" class="lang-text" data-lang-key="cart_title">Your Cart</h3>
-             <div class="cart-item">
-                 <img src="placeholder-coat.jpg" alt="Premium Wool Coat" class="cart-item-img" loading="lazy">
-                 <div class="item-details">
-                     <h4>Premium Wool Coat</h4>
-                     <p>Size: M | Color: Black</p>
-                     <button class="remove-item">Remove</button>
-                 </div>
-                 <div class="item-price">$299.00</div>
-             </div>
-
-             <div class="summary">
-                 <h4>Summary</h4>
-                 <p class="lang-text" data-lang-key="subtotal">Subtotal: <span>$299.00</span></p>
-                 <p class="lang-text" data-lang-key="shipping">Shipping: <span>Free</span></p>
-                 <p class="lang-text" data-lang-key="total">Total: <span>$299.00</span></p>
-                 <a href="checkout-shipping.html" class="button primary-button lang-text" data-lang-key="proceed_checkout">Proceed to Checkout</a>
-             </div>
-        </section>
-
-        <section class="account-section" id="account-section" role="region" aria-labelledby="account-heading">
-            <h3 id="account-heading" class="lang-text" data-lang-key="account_title">My Account</h3>
-            </section>
-
-    </main>
-
-    <footer class="footer" role="contentinfo">
-        <div class="footer-container">
-            <p>© 2024 [YOUR SHOP NAME] Template. All Rights Reserved.</p>
+        <div>
+            <h4 class="font-semibold mb-4">Shop</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a onclick="navigateTo('shop')" class="hover:text-gray-300 cursor-pointer">New Arrivals</a></li>
+                <li><a onclick="navigateTo('shop')" class="hover:text-gray-300 cursor-pointer">Men's Collection</a></li>
+                <li><a onclick="navigateTo('shop')" class="hover:text-gray-300 cursor-pointer">Women's Collection</a></li>
+                <li><a onclick="navigateTo('shop')" class="hover:text-gray-300 cursor-pointer">Accessories</a></li>
+            </ul>
         </div>
-    </footer>
+        <div>
+            <h4 class="font-semibold mb-4">Customer Service</h4>
+            <ul class="space-y-2 text-sm">
+                <li><a href="#" class="hover:text-gray-300">Contact Us</a></li>
+                <li><a href="#" class="hover:text-gray-300">Shipping & Returns</a></li>
+                <li><a href="#" class="hover:text-gray-300">FAQ</a></li>
+                <li><a href="#" class="hover:text-gray-300">Size Guide</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4 class="font-semibold mb-4">Connect</h4>
+            <form>
+                <label for="newsletter-email" class="sr-only">Email for newsletter</label>
+                <input type="email" id="newsletter-email" placeholder="Enter your email" class="w-full p-2 mb-3 text-gray-900" required>
+                <button type="submit" class="btn-primary w-full py-2 px-4 bg-white text-gray-900 hover:bg-gray-200">Subscribe</button>
+            </form>
+        </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 border-t border-gray-700 pt-6 text-center text-sm text-gray-400">
+        &copy; 2025 LUXE. All rights reserved.
+    </div>
+</footer>
 
-    <div id="cart-confirm-message" aria-live="polite" aria-atomic="true"></div>
-
-    <script src="script.js" defer></script>
 </body>
 </html>
