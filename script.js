@@ -1,255 +1,920 @@
+/**
+ * LUXE E-COMMERCE MOCKUP - script.js
+ * * Contains all frontend JavaScript logic for the static HTML pages,
+ * including dynamic content rendering, cart management, user accounts,
+ * and page navigation.
+ * * Features Included:
+ * 1. Mock Product Data (Initial Data)
+ * 2. Core Navigation & UI Logic (Page Transitions, Dark Mode)
+ * 3. Utility & Cart/Wishlist Logic (Persistence via localStorage)
+ * 4. Home Page Rendering
+ * 5. Shop Page Rendering & Filtering (New Filters Added)
+ * 6. Product Detail Rendering (Variant Selection, Wishlist Button)
+ * 7. Cart & Checkout Logic
+ * 8. Account & Login Logic (Mock)
+ * */
+
 // ==========================================================
-// 1. DATA STRUCTURES (MOCK DATA)
+// 1. MOCK PRODUCT DATA
 // ==========================================================
-const initialProducts = [
-    { id: 1, name: 'Premium Wool Coat', price: 299.00, category: 'Women', color: 'Black', size: 'M', rating: 5, tags: ['coat', 'winter', 'luxury'], new: true },
-    { id: 2, name: 'Silk Evening Dress', price: 549.00, category: 'Women', color: 'Red', size: 'L', rating: 4, tags: ['dress', 'formal', 'sale'], new: false },
-    { id: 3, name: 'Leather Biker Jacket', price: 399.00, category: 'Men', color: 'Black', size: 'XL', rating: 5, tags: ['jacket', 'leather', 'men'], new: true },
-    { id: 4, name: 'Luxury Knit Sweater', price: 129.00, category: 'Men', color: 'Blue', size: 'M', rating: 4, tags: ['sweater', 'knit'], new: false },
-    { id: 5, name: 'Minimalist Watch', price: 180.00, category: 'Accessories', color: 'Black', size: 'OS', rating: 5, tags: ['watch', 'accessory'], new: true },
-    { id: 6, name: 'Cashmere Scarf', price: 89.00, category: 'Accessories', color: 'White', size: 'OS', rating: 5, tags: ['scarf', 'winter'], new: false },
-    { id: 7, name: 'Slim Fit Jeans', price: 79.00, category: 'Men', color: 'Blue', size: 'L', rating: 4, tags: ['jeans', 'casual'], new: false },
-    { id: 8, name: 'Designer Handbag', price: 650.00, category: 'Women', color: 'Red', size: 'OS', rating: 5, tags: ['bag', 'luxury'], new: true },
-    { id: 9, name: 'Classic Loafers', price: 150.00, category: 'Men', color: 'Black', size: 'L', rating: 4, tags: ['shoes', 'formal'], new: false },
-    { id: 10, name: 'Elegant Blouse', price: 95.00, category: 'Women', color: 'White', size: 'S', rating: 5, tags: ['blouse', 'top'], new: true },
-    { id: 11, name: 'Wool Trousers', price: 140.00, category: 'Men', color: 'Gray', size: 'M', rating: 3, tags: ['trousers', 'formal'], new: false },
-    { id: 12, name: 'Gold Necklace', price: 45.00, category: 'Accessories', color: 'Gold', size: 'OS', rating: 5, tags: ['jewelry', 'accessory'], new: true },
+
+const products = [
+    { id: 1, name: "The Classic Cashmere Sweater", price: 199.99, category: "Women", description: "An essential piece crafted from the finest grade-A cashmere. Soft, warm, and timeless.", rating: 4.8, inventory: 50, featured: true, sizes: ["S", "M", "L"], colors: ["Black", "Gray", "Beige"] },
+    { id: 2, name: "Premium Selvedge Denim", price: 149.00, category: "Men", description: "Raw Japanese selvedge denim designed to mold perfectly to your body over time.", rating: 4.6, inventory: 30, featured: true, sizes: ["S", "M", "L", "XL"], colors: ["Blue"] },
+    { id: 3, name: "Sleek Leather Handbag", price: 349.50, category: "Accessories", description: "Italian leather handbag with minimal hardware and a modern, angular silhouette.", rating: 4.9, inventory: 20, featured: true, sizes: ["OS"], colors: ["Black", "White"] },
+    { id: 4, name: "Geometric Silk Scarf", price: 75.00, category: "Accessories", description: "100% silk twill scarf featuring a bold, architectural print.", rating: 4.7, inventory: 70, featured: false, sizes: ["OS"], colors: ["Red", "Blue"] },
+    { id: 5, name: "Tailored Linen Blazer", price: 275.00, category: "Men", description: "Lightweight linen blazer, perfect for smart-casual summer events. Unlined construction.", rating: 4.5, inventory: 40, featured: false, sizes: ["M", "L", "XL"], colors: ["White", "Beige"] },
+    { id: 6, name: "High-Waisted Wool Trousers", price: 189.99, category: "Women", description: "Structured, high-rise trousers cut from luxurious Australian merino wool.", rating: 4.7, inventory: 60, featured: false, sizes: ["S", "M"], colors: ["Black", "Gray"] },
 ];
 
-let products = JSON.parse(localStorage.getItem('products')) || initialProducts;
 let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+let currency = localStorage.getItem('currency') || 'USD';
+let currentFilters = { category: [], price: [], size: [], color: [], rating: [] };
 let currentPage = 1;
-const productsPerPage = 9;
-let currentFilters = {};
-let currentSort = 'newest';
-let currentCurrency = localStorage.getItem('currency') || 'USD';
-
-let isAuthenticated = JSON.parse(localStorage.getItem('isAuthenticated')) || false;
-let user = JSON.parse(localStorage.getItem('user')) || { name: 'Guest', email: '', orders: [] };
-
-// Admin State
-let isAdminAuthenticated = JSON.parse(sessionStorage.getItem('isAdminAuthenticated')) || false;
-
-
-let checkoutState = {
-    step: 1, 
-    shipping: {
-        firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com',
-        address1: '123 Mock Lane', address2: '', city: 'New York',
-        state: 'NY', zip: '10001', country: 'USA',
-        method: 'standard', cost: 0.00
-    },
-    payment: {
-        method: 'card', name: 'John A. Doe', last4: '1234'
-    },
-    totals: {
-        subtotal: 0.00,
-        shipping: 0.00,
-        taxRate: 0.05,
-        tax: 0.00,
-        discount: 0.00,
-        total: 0.00
-    }
-};
-
-const currencyRates = { USD: 1.0, EUR: 0.92, GBP: 0.79, INR: 83.50 };
-const currencySymbols = { USD: '$', EUR: '€', GBP: '£', INR: '₹' };
-
+const productsPerPage = 8;
+let sortOrder = 'newest';
+let loggedInUser = JSON.parse(localStorage.getItem('loggedInUser')) || null;
+let orderHistory = JSON.parse(localStorage.getItem('orderHistory')) || [];
 
 // ==========================================================
 // 2. CORE NAVIGATION & UI LOGIC
 // ==========================================================
 
-function navigateTo(pageId, productId = null) {
-    document.querySelectorAll('.page').forEach(page => {
-        page.classList.remove('active', 'slide-in-right');
-    });
-
-    const targetPage = document.getElementById(`page-${pageId}`);
-    if (targetPage) {
-        targetPage.classList.add('active', 'slide-in-right');
-    } else {
-        return;
-    }
-
-    if (pageId === 'shop') {
-        renderProducts(products); 
-    } else if (pageId === 'product' && productId) {
-        renderProductDetail(productId);
-    } else if (pageId === 'cart') {
-        updateCartDisplay(); 
-    } else if (pageId === 'checkout') {
-        if (cart.length === 0) {
-            showToast('Your cart is empty. Please add items before checking out.');
-            navigateTo('shop');
-            return;
-        }
-        updateCheckoutTotals();
-        setCheckoutStep(checkoutState.step, false);
-    } else if (pageId === 'account') {
-        updateAccountPage();
-    }
-    
-    document.getElementById('mobile-menu')?.classList.remove('active');
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('.page')) {
-        navigateTo('home');
-        updateCartCounter();
-        updateCountdown();
-        loadFeaturedProducts();
-    } 
-    
-    if (document.getElementById('admin-dashboard-section')) {
-        initAdminDashboard();
-    }
-
-    const currencySelect = document.getElementById('currency-select');
-    if (currencySelect) currencySelect.value = currentCurrency;
-
-    if (localStorage.getItem('darkMode') === 'enabled') {
-        document.body.classList.add('dark-mode');
-    }
+    // Initial setup
+    loadInitialData();
+    applyInitialStyles();
+    // Default navigation
+    navigateTo('home');
 });
 
+function loadInitialData() {
+    updateCartCount();
+    updateWishlistIcon();
+    updateCurrencyDisplay(currency);
+    document.getElementById('currency-select').value = currency;
+    renderFeaturedProducts();
+    // Ensure filters persist on reload if on shop page
+    if (document.getElementById('page-shop').classList.contains('active')) {
+        applyFilters(); 
+    }
+}
+
+function applyInitialStyles() {
+    const isDarkMode = localStorage.getItem('darkMode') === 'true';
+    document.body.classList.toggle('dark-mode', isDarkMode);
+    // Apply styling to filter checkboxes on load
+    document.querySelectorAll('.filter-group input[type="checkbox"]').forEach(checkbox => {
+        const label = checkbox.parentElement;
+        if (checkbox.dataset.filter === 'color') {
+            label.classList.toggle('ring-2', checkbox.checked);
+        } else {
+            label.classList.toggle('bg-gray-200', checkbox.checked);
+            label.classList.toggle('dark-mode:bg-gray-600', checkbox.checked);
+        }
+    });
+}
+
+/**
+ * Handles all navigation between pages with directional sliding transitions.
+ * @param {string} pageId - The ID of the page to navigate to (e.g., 'home', 'shop').
+ * @param {number|null} productId - Optional ID for product detail page.
+ * @param {boolean|null} directionHint - True for forward (LTR), False for backward (RTL).
+ */
+function navigateTo(pageId, productId = null, directionHint = null) {
+    const pages = document.querySelectorAll('.page');
+    const activePage = document.querySelector('.page.active');
+    const targetPage = document.getElementById(`page-${pageId}`);
+    
+    // Determine the direction of the transition
+    let transitionDirection = '';
+    if (directionHint === true) {
+        transitionDirection = 'slide-in-ltr'; // Left to Right
+    } else if (directionHint === false) {
+        transitionDirection = 'slide-in-rtl'; // Right to Left
+    }
+
+    // 1. Hide all pages and remove animation classes
+    pages.forEach(page => {
+        page.classList.remove('active', 'slide-in-ltr', 'slide-in-rtl');
+    });
+    
+    // Deactivate current page's display after a short delay to allow transition
+    if (activePage) {
+        activePage.style.display = 'none';
+    }
+
+    // 2. Activate target page with animation
+    if (targetPage) {
+        targetPage.style.display = 'block';
+        setTimeout(() => {
+            targetPage.classList.add('active');
+            if (transitionDirection) {
+                targetPage.classList.add(transitionDirection);
+            }
+        }, 10); // Small delay to ensure display:block applies before animation
+
+        // 3. Trigger page-specific rendering
+        if (pageId === 'shop') {
+            applyFilters(); // Re-apply filters and render grid
+        } else if (pageId === 'product' && productId) {
+            renderProductDetail(productId);
+        } else if (pageId === 'cart') {
+            updateCartDisplay(); 
+        } else if (pageId === 'wishlist') {
+            renderWishlistDisplay();
+        } else if (pageId === 'checkout') {
+            setCheckoutStep(1);
+        } else if (pageId === 'account') {
+            updateAccountView();
+        }
+    }
+    
+    // Close mobile menu if open
+    document.getElementById('mobile-menu')?.classList.remove('active');
+    window.scrollTo(0, 0); // Scroll to top on page change
+}
+
 function toggleMobileMenu() {
-    document.getElementById('mobile-menu')?.classList.toggle('active');
+    document.getElementById('mobile-menu').classList.toggle('active');
+}
+
+function toggleMobileFilters() {
+    document.getElementById('shop-filters-sidebar').classList.toggle('active');
 }
 
 function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    if (document.body.classList.contains('dark-mode')) {
-        localStorage.setItem('darkMode', 'enabled');
-    } else {
-        localStorage.setItem('darkMode', 'disabled');
-    }
+    const isDarkMode = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode);
+}
+
+function openDocumentation() {
+    document.getElementById('docs-modal').style.display = 'block';
+    document.getElementById('modal-overlay').style.display = 'block';
+}
+
+function closeDocumentation() {
+    document.getElementById('docs-modal').style.display = 'none';
+    document.getElementById('modal-overlay').style.display = 'none';
 }
 
 
 // ==========================================================
-// 3. UTILITY & CART LOGIC
+// 3. UTILITY & CART/WISHLIST LOGIC
 // ==========================================================
 
-function formatPrice(price) {
-    const rate = currencyRates[currentCurrency];
-    const symbol = currencySymbols[currentCurrency];
-    const convertedPrice = (parseFloat(price) * rate).toFixed(2);
-    return `${symbol} ${convertedPrice}`;
+function formatPrice(amount) {
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+    });
+    return formatter.format(amount);
 }
 
-function updateCartCounter() {
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const counterElement = document.getElementById('cart-count');
-    if (counterElement) {
-        counterElement.textContent = totalItems;
-    }
+function changeCurrency(newCurrency) {
+    currency = newCurrency;
+    localStorage.setItem('currency', currency);
+    updateCurrencyDisplay(currency);
+    // Re-render all dynamic content to show new currency
+    if (document.getElementById('page-shop').classList.contains('active')) applyFilters();
+    if (document.getElementById('page-product').classList.contains('active')) renderProductDetail(document.getElementById('product-title').dataset.productId);
+    if (document.getElementById('page-cart').classList.contains('active')) updateCartDisplay();
+    if (document.getElementById('page-checkout').classList.contains('active')) updateCheckoutSummary();
+    if (document.getElementById('page-wishlist').classList.contains('active')) renderWishlistDisplay();
+
+    showToast(`Currency set to ${currency}`);
 }
 
+function updateCurrencyDisplay(newCurrency) {
+    // This function doesn't need to do much as formatPrice handles the symbol
+    // Ensure the select box is updated
+    document.getElementById('currency-select').value = newCurrency;
+}
+
+
+// --- Toast Notification ---
+function showToast(message) {
+    const toast = document.getElementById('toast-notification');
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-20px)';
+    }, 3000);
+}
+
+// --- Cart Persistence & UI ---
 function saveCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCounter();
-    updateCartDisplay();
-    updateCheckoutTotals();
+    updateCartCount();
 }
+
+function updateCartCount() {
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    document.getElementById('cart-count').textContent = count;
+}
+
+// --- Wishlist Persistence & UI ---
+function saveWishlist() {
+    localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    updateWishlistIcon();
+    if (document.getElementById('page-account').classList.contains('active')) {
+        updateAccountWishlistCount();
+    }
+}
+
+function updateWishlistIcon() {
+    const icon = document.getElementById('wishlist-icon');
+    if (wishlist.length > 0) {
+        icon.textContent = '❤️'; // Filled heart
+        icon.classList.add('active');
+    } else {
+        icon.textContent = '🤍'; // Empty heart
+        icon.classList.remove('active');
+    }
+}
+
+// Function to toggle wishlist status for a specific product
+function toggleProductWishlist(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    const index = wishlist.findIndex(item => item.id === productId);
+
+    if (index === -1) {
+        // Add to wishlist
+        wishlist.push({ id: productId, name: product.name });
+        showToast(`${product.name} added to wishlist! ❤️`);
+    } else {
+        // Remove from wishlist
+        wishlist.splice(index, 1);
+        showToast(`${product.name} removed from wishlist! 🤍`);
+    }
+    saveWishlist();
+    // Update the icon on the product detail page immediately
+    updateProductWishlistIcon(productId); 
+}
+
+// Function to update the specific icon on the product detail page
+function updateProductWishlistIcon(productId) {
+    const iconElement = document.getElementById('product-wishlist-icon');
+    if (!iconElement) return;
+
+    const isInWishlist = wishlist.some(item => item.id === productId);
+
+    if (isInWishlist) {
+        iconElement.textContent = '❤️'; // Filled heart
+        iconElement.parentElement.classList.add('border-red-600');
+    } else {
+        iconElement.textContent = '🤍'; // Empty heart
+        iconElement.parentElement.classList.remove('border-red-600');
+    }
+}
+
+// Function to remove an item from the wishlist
+function removeFromWishlist(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+
+    wishlist = wishlist.filter(item => item.id !== productId);
+    showToast(`${product.name} removed from wishlist. 💔`);
+    saveWishlist();
+    renderWishlistDisplay(); // Re-render the page
+}
+
+// Function to move an item from wishlist to cart
+function moveToCart(productId) {
+    const product = products.find(p => p.id === productId);
+    if (!product) return;
+    
+    addToCart(productId, 1); // Add to cart with quantity 1
+    
+    // Remove from wishlist
+    wishlist = wishlist.filter(item => item.id !== productId);
+    saveWishlist(); 
+    
+    showToast(`Moved ${product.name} to cart!`);
+    renderWishlistDisplay();
+}
+
+
+// ==========================================================
+// 4. HOME PAGE LOGIC
+// ==========================================================
+
+// --- Countdown Timer ---
+function startCountdown() {
+    const saleEnd = new Date(Date.now() + 24 * 60 * 60 * 1000 * 3); // 3 days from now
+    const countdownInterval = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = saleEnd - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if (distance < 0) {
+            clearInterval(countdownInterval);
+            document.getElementById("promo-heading").textContent = "Sale Ended.";
+            document.querySelector(".countdown").innerHTML = "EXPIRED";
+            return;
+        }
+
+        document.getElementById("countdown-days").textContent = String(days).padStart(2, '0');
+        document.getElementById("countdown-hours").textContent = String(hours).padStart(2, '0');
+        document.getElementById("countdown-minutes").textContent = String(minutes).padStart(2, '0');
+        document.getElementById("countdown-seconds").textContent = String(seconds).padStart(2, '0');
+    }, 1000);
+}
+
+function renderFeaturedProducts() {
+    const featured = products.filter(p => p.featured).slice(0, 4);
+    const container = document.getElementById('featured-products');
+    if (!container) return;
+    
+    container.innerHTML = featured.map(product => {
+        const imageEmoji = product.category === "Women" ? '👚' : product.category === "Men" ? '👔' : '💍';
+        return `
+            <div class="product-card p-4 border dark-mode:border-gray-700 bg-white dark-mode:bg-gray-700 shadow-sm rounded-lg" onclick="navigateTo('product', ${product.id}, true)">
+                <div class="product-image mb-4 rounded-md">
+                    <span class="text-6xl">${imageEmoji}</span>
+                </div>
+                <h3 class="text-lg font-semibold truncate">${product.name}</h3>
+                <p class="text-gray-500 dark-mode:text-gray-400 text-sm">${product.category}</p>
+                <p class="text-xl font-bold mt-2">${formatPrice(product.price)}</p>
+            </div>
+        `;
+    }).join('');
+    
+    startCountdown();
+}
+
+
+// ==========================================================
+// 5. SHOP PAGE LOGIC (Filtering & Sorting)
+// ==========================================================
+
+function applyFilters() {
+    // 1. Collect Filters
+    currentFilters = { category: [], price: [], size: [], color: [], rating: [] };
+    const checkboxes = document.querySelectorAll('#shop-filters-sidebar input[type="checkbox"]');
+    
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            const filterType = checkbox.dataset.filter;
+            const filterValue = checkbox.value;
+            
+            // Update filter object
+            if (currentFilters[filterType]) {
+                currentFilters[filterType].push(filterValue);
+            }
+        }
+        
+        // Update styling immediately based on state
+        const label = checkbox.parentElement;
+        if (checkbox.dataset.filter === 'color') {
+            label.classList.toggle('ring-2', checkbox.checked);
+            label.classList.toggle('ring-offset-2', checkbox.checked);
+            label.classList.toggle('ring-gray-900', checkbox.checked);
+        } else {
+            label.classList.toggle('bg-gray-200', checkbox.checked);
+            label.classList.toggle('dark-mode:bg-gray-600', checkbox.checked);
+        }
+    });
+
+    // 2. Filter Products
+    let filteredProducts = products.filter(product => {
+        const { category, price, size, color, rating } = currentFilters;
+
+        // Category filter
+        if (category.length > 0 && !category.includes(product.category)) return false;
+
+        // Price filter
+        if (price.length > 0) {
+            const isPriceMatch = price.some(range => {
+                const [min, max] = range.split('-').map(Number);
+                return product.price >= min && product.price < max;
+            });
+            if (!isPriceMatch) return false;
+        }
+
+        // Size filter (Assumes product.sizes is an array of available sizes)
+        if (size.length > 0) {
+             const isSizeMatch = size.some(s => product.sizes.includes(s));
+             if (!isSizeMatch) return false;
+        }
+        
+        // Color filter (Assumes product.colors is an array of available colors)
+        if (color.length > 0) {
+             const isColorMatch = color.some(c => product.colors.includes(c));
+             if (!isColorMatch) return false;
+        }
+
+        // Rating filter
+        if (rating.length > 0) {
+            const isRatingMatch = rating.some(minRating => product.rating >= Number(minRating));
+            if (!isRatingMatch) return false;
+        }
+        
+        return true;
+    });
+
+    // 3. Sort Products
+    sortProducts(filteredProducts);
+}
+
+function sortProducts(filteredProducts = products) {
+    const select = document.getElementById('sort-select');
+    if (!select) return;
+    sortOrder = select.value;
+    
+    let productsToSort = filteredProducts;
+
+    productsToSort.sort((a, b) => {
+        if (sortOrder === 'price-low') {
+            return a.price - b.price;
+        } else if (sortOrder === 'price-high') {
+            return b.price - a.price;
+        } else if (sortOrder === 'rating') {
+            return b.rating - a.rating;
+        } else { // newest (default)
+            return a.id - b.id; // Mocking "newest" by lowest ID
+        }
+    });
+    
+    // 4. Paginate and Render
+    currentPage = 1;
+    renderProductGrid(productsToSort);
+}
+
+function clearFilters() {
+    document.querySelectorAll('#shop-filters-sidebar input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    // Reset sort to default
+    document.getElementById('sort-select').value = 'newest';
+    applyFilters();
+}
+
+function filterByCategory(category) {
+    // Clear all filters first for clean navigation
+    clearFilters(); 
+    // Set the specific category filter
+    const checkbox = document.querySelector(`#shop-filters-sidebar input[value="${category}"]`);
+    if (checkbox) checkbox.checked = true;
+    
+    // Navigate to shop and apply filters
+    navigateTo('shop', null, true);
+    // Since navigateTo calls applyFilters, we don't need to call it directly here.
+}
+
+
+function renderProductGrid(productsToRender) {
+    const container = document.getElementById('products-grid');
+    const countElement = document.getElementById('product-count');
+    const paginationInfo = document.getElementById('pagination-info');
+    if (!container || !countElement || !paginationInfo) return;
+
+    countElement.textContent = productsToRender.length;
+    
+    // Calculate pagination details
+    const totalPages = Math.ceil(productsToRender.length / productsPerPage);
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = startIndex + productsPerPage;
+    const paginatedProducts = productsToRender.slice(startIndex, endIndex);
+
+    // Update pagination info
+    paginationInfo.textContent = `Page ${totalPages > 0 ? currentPage : 0} of ${totalPages}`;
+
+    container.innerHTML = paginatedProducts.map(product => {
+        const imageEmoji = product.category === "Women" ? '👚' : product.category === "Men" ? '👔' : '💍';
+        return `
+            <div class="product-card p-4 border dark-mode:border-gray-700 bg-white dark-mode:bg-gray-700 shadow-sm rounded-lg" onclick="navigateTo('product', ${product.id}, true)">
+                <div class="product-image mb-4 rounded-md">
+                    <span class="text-6xl">${imageEmoji}</span>
+                </div>
+                <h3 class="text-lg font-semibold truncate">${product.name}</h3>
+                <p class="text-gray-500 dark-mode:text-gray-400 text-sm">${product.category}</p>
+                <p class="text-xl font-bold mt-2">${formatPrice(product.price)}</p>
+                <p class="text-sm text-yellow-500">
+                    ${'⭐️'.repeat(Math.round(product.rating))} (${product.rating})
+                </p>
+            </div>
+        `;
+    }).join('');
+}
+
+function changePage(direction) {
+    const productsToRender = products.filter(product => {
+        // Re-run the full filtering logic to get the correct set of products
+        const { category, price, size, color, rating } = currentFilters;
+
+        if (category.length > 0 && !category.includes(product.category)) return false;
+        if (price.length > 0) {
+            const isPriceMatch = price.some(range => {
+                const [min, max] = range.split('-').map(Number);
+                return product.price >= min && product.price < max;
+            });
+            if (!isPriceMatch) return false;
+        }
+        if (size.length > 0 && !size.some(s => product.sizes.includes(s))) return false;
+        if (color.length > 0 && !color.some(c => product.colors.includes(c))) return false;
+        if (rating.length > 0 && !rating.some(minRating => product.rating >= Number(minRating))) return false;
+        
+        return true;
+    });
+
+    const totalPages = Math.ceil(productsToRender.length / productsPerPage);
+    const newPage = currentPage + direction;
+
+    if (newPage > 0 && newPage <= totalPages) {
+        currentPage = newPage;
+        // Re-sort the current set before rendering the new page
+        sortProducts(productsToRender); 
+    }
+}
+
+
+// ==========================================================
+// 6. PRODUCT DETAIL LOGIC
+// ==========================================================
+
+let selectedVariant = { size: null, color: null };
+
+function renderProductDetail(id) {
+    const product = products.find(p => p.id === id);
+    if (!product) {
+        showToast('Product not found!');
+        navigateTo('shop', null, false);
+        return;
+    }
+    
+    const imageEmoji = product.category === "Women" ? '👚' : product.category === "Men" ? '👔' : '💍';
+
+    // Update main product details
+    document.getElementById('product-title').textContent = product.name;
+    document.getElementById('product-title').dataset.productId = product.id; // Store ID for cart/wishlist
+    document.getElementById('product-price').textContent = formatPrice(product.price);
+    document.getElementById('product-description').textContent = product.description;
+    document.getElementById('product-breadcrumb').textContent = product.name;
+    document.getElementById('product-sku').textContent = `SKU: LUX-TS-${product.id.toString().padStart(3, '0')}`;
+    document.getElementById('main-product-image').innerHTML = `<span class="text-8xl">${imageEmoji}</span>`;
+    
+    // Reset selected variant
+    selectedVariant = { size: null, color: null };
+
+    // --- Render Size Variants ---
+    const sizeContainer = document.getElementById('variant-size-options');
+    sizeContainer.innerHTML = product.sizes.map(size => `
+        <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" 
+                data-size="${size}" 
+                onclick="selectVariant('size', '${size}', this)">${size}</button>
+    `).join('');
+    
+    // --- Render Color Variants ---
+    const colorContainer = document.getElementById('variant-color-options');
+    colorContainer.innerHTML = product.colors.map(color => {
+        const bgColorClass = `bg-${color.toLowerCase().replace(/\s/g, '-')}-600`;
+        const initialBgColorClass = color.toLowerCase() === 'white' ? 'bg-white' : (color.toLowerCase() === 'black' ? 'bg-black' : bgColorClass);
+        return `
+            <div class="color-option w-8 h-8 rounded-full border ring-offset-2 hover:ring-2 cursor-pointer ${initialBgColorClass}"
+                 data-color="${color}" 
+                 onclick="selectVariant('color', '${color}', this)"></div>
+        `;
+    }).join('');
+    
+    // --- Setup Action Buttons ---
+    const cartButton = document.getElementById('detail-add-to-cart');
+    if(cartButton) {
+        // Clear previous click handler before adding new one
+        cartButton.onclick = () => { 
+            const quantityInput = document.getElementById('quantity-input');
+            const quantity = quantityInput ? Number(quantityInput.value) : 1;
+            addToCart(product.id, quantity); 
+        };
+    }
+    
+    // Wishlist button setup
+    const wishlistButton = document.getElementById('detail-wishlist-toggle');
+    if (wishlistButton) {
+        wishlistButton.onclick = () => toggleProductWishlist(product.id);
+        updateProductWishlistIcon(product.id); 
+    }
+}
+
+function selectVariant(type, value, element) {
+    const containerId = type === 'size' ? 'variant-size-options' : 'variant-color-options';
+    const container = document.getElementById(containerId);
+    
+    // Reset all others in the group
+    container.querySelectorAll(`[data-${type}]`).forEach(el => {
+        el.classList.remove('bg-black', 'text-white', 'dark-mode:bg-white', 'dark-mode:text-black', 'ring-4', 'ring-offset-2', 'ring-black');
+        if (type === 'size') {
+             el.classList.add('bg-white', 'text-black', 'dark-mode:bg-gray-700', 'dark-mode:text-white');
+        }
+    });
+    
+    // Set active state for the selected element
+    if (type === 'size') {
+        element.classList.add('bg-black', 'text-white', 'dark-mode:bg-white', 'dark-mode:text-black');
+    } else if (type === 'color') {
+        element.classList.add('ring-4', 'ring-offset-2', 'ring-black');
+    }
+    
+    selectedVariant[type] = value;
+    // showToast(`${type} selected: ${value}`); // Optional feedback
+}
+
+
+// ==========================================================
+// 7. CART & CHECKOUT LOGIC
+// ==========================================================
 
 function addToCart(productId, quantity = 1) {
     const product = products.find(p => p.id === productId);
     if (!product) return;
-    quantity = parseInt(quantity, 10);
-    if (isNaN(quantity) || quantity < 1) return;
-
-    const existingItem = cart.find(item => item.id === productId);
-    if (existingItem) {
-        existingItem.quantity += quantity;
-    } else {
-        cart.push({ id: productId, name: product.name, price: product.price, quantity: quantity });
-    }
-
-    saveCart();
-    showToast(`Added ${product.name} (x${quantity}) to cart!`);
-}
-
-function updateCartItemQuantity(productId, newQuantity) {
-    const item = cart.find(i => i.id === productId);
-    newQuantity = parseInt(newQuantity, 10);
     
-    if (item && !isNaN(newQuantity)) {
-        if (newQuantity <= 0) {
-            cart = cart.filter(i => i.id !== productId);
-        } else {
-            item.quantity = newQuantity;
-        }
+    // Check for variant selection if needed (Simple version: only check if variants exist)
+    const hasVariants = product.sizes?.length > 0 || product.colors?.length > 0;
+    const needsSize = product.sizes?.length > 0 && !selectedVariant.size;
+    const needsColor = product.colors?.length > 0 && !selectedVariant.color;
+
+    if (needsSize || needsColor) {
+        let missing = [];
+        if (needsSize) missing.push('Size');
+        if (needsColor) missing.push('Color');
+        showToast(`Please select a ${missing.join(' and ')} before adding to cart.`);
+        return;
     }
+
+    // Create a unique cart item ID based on product ID and selected variants
+    const variantString = (selectedVariant.size || '') + (selectedVariant.color || '');
+    const cartItemId = productId + '-' + variantString;
+
+    const existingItemIndex = cart.findIndex(item => item.id === cartItemId);
+    
+    if (existingItemIndex > -1) {
+        cart[existingItemIndex].quantity += quantity;
+    } else {
+        cart.push({
+            id: cartItemId,
+            productId: productId,
+            name: product.name,
+            price: product.price,
+            quantity: quantity,
+            size: selectedVariant.size,
+            color: selectedVariant.color
+        });
+    }
+    
     saveCart();
+    updateCartDisplay();
+    showToast(`${quantity} x ${product.name} added to cart!`);
 }
 
-function removeCartItem(productId) {
-    cart = cart.filter(i => i.id !== productId);
+function updateCartItemQuantity(cartItemId, newQuantity) {
+    const itemIndex = cart.findIndex(item => item.id === cartItemId);
+    if (itemIndex > -1) {
+        const quantity = Number(newQuantity);
+        if (quantity > 0) {
+            cart[itemIndex].quantity = quantity;
+        } else {
+            // Remove item if quantity is zero
+            cart.splice(itemIndex, 1);
+        }
+        saveCart();
+        updateCartDisplay();
+    }
+}
+
+function removeCartItem(cartItemId) {
+    cart = cart.filter(item => item.id !== cartItemId);
     saveCart();
+    updateCartDisplay();
     showToast('Item removed from cart.');
 }
 
-function clearCart() {
-    cart = [];
-    saveCart();
-    showToast('Cart cleared!');
+function calculateCartTotals() {
+    const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+    const taxRate = 0.05; // Mock 5% tax
+    const tax = subtotal * taxRate;
+    const total = subtotal + tax;
+    
+    return { subtotal, tax, total, itemCount: cart.length };
 }
 
 function updateCartDisplay() {
+    const { subtotal, tax, total, itemCount } = calculateCartTotals();
     const container = document.getElementById('cart-items-container');
     const emptyMessage = document.getElementById('empty-cart-message');
     
-    if (!container) return;
-
-    if (cart.length === 0) {
+    if (itemCount === 0) {
         container.innerHTML = '';
         if (emptyMessage) emptyMessage.style.display = 'block';
-        updateCartSummary(0, 0, 0, 'Calculated at checkout');
+    } else {
+        if (emptyMessage) emptyMessage.style.display = 'none';
+
+        container.innerHTML = cart.map(item => {
+            const product = products.find(p => p.id === item.productId);
+            const imageEmoji = product ? (product.category === "Women" ? '👚' : product.category === "Men" ? '👔' : '💍') : '❓';
+            
+            const variantInfo = [item.size, item.color].filter(Boolean).join(' / ');
+
+            return `
+                <div class="flex items-center gap-6 p-4 border border-gray-200 dark-mode:border-gray-700 bg-white dark-mode:bg-gray-700 shadow-sm">
+                    <div class="w-16 h-16 flex items-center justify-center bg-gray-100 dark-mode:bg-gray-800 flex-shrink-0">
+                        <span class="text-3xl">${imageEmoji}</span>
+                    </div>
+                    
+                    <div class="flex-1 min-w-0">
+                        <h3 class="text-lg font-semibold truncate">${item.name}</h3>
+                        <p class="text-sm text-gray-500 dark-mode:text-gray-400">${variantInfo || 'Standard'}</p>
+                        <p class="text-base font-bold mt-1">${formatPrice(item.price)}</p>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="number" value="${item.quantity}" min="1" max="10" 
+                            onchange="updateCartItemQuantity('${item.id}', this.value)"
+                            class="w-16 p-2 border border-gray-300 rounded text-center dark-mode:bg-gray-800">
+                    </div>
+
+                    <div class="text-right w-24 flex-shrink-0">
+                        <p class="font-bold">${formatPrice(item.price * item.quantity)}</p>
+                        <button class="text-sm text-red-500 hover:underline mt-1" onclick="removeCartItem('${item.id}')">Remove</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Update Summary panel
+    document.getElementById('summary-items').textContent = itemCount;
+    document.getElementById('summary-subtotal').textContent = formatPrice(subtotal);
+    document.getElementById('summary-tax').textContent = formatPrice(tax);
+    document.getElementById('summary-total').textContent = formatPrice(total);
+}
+
+function applyCoupon() {
+    const couponInput = document.getElementById('coupon-input');
+    const couponCode = couponInput ? couponInput.value.toUpperCase() : '';
+    
+    if (couponCode === 'LUXE20') {
+        showToast('Coupon "LUXE20" applied! (Mock: 20% off total)');
+        // In a real app, update total calculation here
+    } else {
+        showToast('Invalid or expired coupon code.');
+    }
+    couponInput.value = '';
+}
+
+
+// --- Checkout Logic ---
+let currentCheckoutStep = 1;
+let shippingCost = 0; // Default to free standard shipping
+
+function setCheckoutStep(step) {
+    if (cart.length === 0 && step > 1) {
+        showToast("Your cart is empty. Cannot proceed to checkout.");
+        navigateTo('cart', null, false);
+        return;
+    }
+    
+    currentCheckoutStep = step;
+    const steps = [1, 2, 3];
+    
+    steps.forEach(s => {
+        const stepPanel = document.getElementById(`checkout-step-${s}`);
+        const stepIcon = document.getElementById(`step-icon-${s}`);
+        
+        if (stepPanel) stepPanel.style.display = s === step ? 'block' : 'none';
+        
+        if (stepIcon) {
+            stepIcon.classList.toggle('bg-black', s === step);
+            stepIcon.classList.toggle('text-white', s === step);
+            stepIcon.classList.toggle('bg-gray-300', s !== step);
+            stepIcon.classList.toggle('text-gray-700', s !== step);
+        }
+    });
+    
+    if (step === 3) {
+        updateCheckoutSummary();
+    }
+}
+
+function updateShippingCost(method) {
+    shippingCost = method === 'express' ? 15.00 : 0.00;
+    if (currentCheckoutStep === 3) {
+        updateCheckoutSummary();
+    }
+}
+
+function updateCheckoutSummary() {
+    const { subtotal, tax, total } = calculateCartTotals();
+    const finalTotal = total + shippingCost;
+    
+    const summaryHtml = `
+        <div class="flex justify-between"><span>Subtotal:</span><span>${formatPrice(subtotal)}</span></div>
+        <div class="flex justify-between"><span>Shipping:</span><span>${shippingCost > 0 ? formatPrice(shippingCost) : 'Free'}</span></div>
+        <div class="flex justify-between"><span>Tax:</span><span>${formatPrice(tax)}</span></div>
+        <div class="flex justify-between text-xl font-bold border-t pt-2 mt-2"><span>Total:</span><span>${formatPrice(finalTotal)}</span></div>
+    `;
+    document.getElementById('checkout-totals-summary').innerHTML = summaryHtml;
+}
+
+function placeOrder() {
+    if (!document.getElementById('terms-agree').checked) {
+        showToast('You must agree to the terms and conditions to place the order.');
+        return;
+    }
+    
+    if (cart.length === 0) {
+        showToast('Cannot place an empty order.');
+        navigateTo('cart', null, false);
+        return;
+    }
+    
+    const { total } = calculateCartTotals();
+    const finalTotal = total + shippingCost;
+    
+    // 1. Create Order Object (Mock)
+    const newOrder = {
+        id: orderHistory.length + 1,
+        date: new Date().toLocaleDateString(),
+        items: cart,
+        total: finalTotal,
+        status: 'Processing',
+        shippingAddress: document.getElementById('shipping-address-1').value || 'N/A',
+        paymentMethod: 'Credit Card (Mock)'
+    };
+    
+    // 2. Update History & Clear Cart
+    orderHistory.push(newOrder);
+    localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+    cart = [];
+    saveCart();
+    
+    // 3. Provide Feedback
+    showToast(`Order #${newOrder.id} placed successfully! Total: ${formatPrice(finalTotal)}`);
+    
+    // 4. Redirect (Mocking a confirmation page)
+    navigateTo('account', null, true);
+    if (loggedInUser) showOrderHistory(); // Show the new order immediately
+}
+
+// ==========================================================
+// 8. WISHLIST PAGE RENDERING
+// ==========================================================
+
+function renderWishlistDisplay() {
+    const container = document.getElementById('wishlist-items-container');
+    const emptyMessage = document.getElementById('empty-wishlist-message');
+
+    if (!container) return;
+
+    if (wishlist.length === 0) {
+        container.innerHTML = '';
+        if (emptyMessage) emptyMessage.style.display = 'block';
         return;
     }
     
     if (emptyMessage) emptyMessage.style.display = 'none';
 
-    let subtotal = 0;
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const itemsHtml = wishlist.map(wishlistItem => {
+        const product = products.find(p => p.id === wishlistItem.id);
+        if (!product) return ''; // Skip if product data is missing
 
-    const itemsHtml = cart.map(item => {
-        const product = products.find(p => p.id === item.id);
-        const imageEmoji = product ? (product.id % 2 === 0 ? '👚' : '👖') : '🎁';
-        const itemPrice = item.price * item.quantity;
-        subtotal += itemPrice;
-
+        const imageEmoji = product.category === "Women" ? '👚' : product.category === "Men" ? '👔' : '💍';
+        
         return `
-            <div class="flex items-center gap-6 p-4 border border-gray-100 bg-white dark-mode:bg-gray-700">
-                <div class="cart-item-image flex-shrink-0" aria-hidden="true">${imageEmoji}</div>
+            <div class="flex flex-col md:flex-row items-center gap-6 p-4 border border-gray-200 dark-mode:border-gray-700 bg-white dark-mode:bg-gray-700 shadow-sm">
                 
-                <div class="flex-1 min-w-0">
-                    <h3 class="text-lg font-semibold truncate">${item.name}</h3>
-                    <p class="text-gray-600 text-sm dark-mode:text-gray-400">${formatPrice(item.price)} each</p>
-                    <p class="text-sm dark-mode:text-gray-400">SKU: LUX-TS-${item.id.toString().padStart(3, '0')}</p>
+                <div class="w-16 h-16 flex items-center justify-center bg-gray-100 dark-mode:bg-gray-600 flex-shrink-0 cursor-pointer" onclick="navigateTo('product', ${product.id}, true)">
+                    <span class="text-3xl">${imageEmoji}</span>
                 </div>
                 
-                <div class="flex items-center gap-4">
-                    <label for="qty-${item.id}" class="sr-only">Quantity for ${item.name}</label>
-                    <input 
-                        type="number" 
-                        id="qty-${item.id}"
-                        value="${item.quantity}" 
-                        min="1" 
-                        max="10"
-                        onchange="updateCartItemQuantity(${item.id}, this.value)"
-                        class="w-16 px-2 py-1 border border-gray-300 rounded text-center dark-mode:bg-gray-800"
-                        aria-label="Quantity"
-                    >
-                    <div class="text-lg font-bold w-24 text-right">${formatPrice(itemPrice)}</div>
-                    
+                <div class="flex-1 min-w-0 text-center md:text-left">
+                    <h3 class="text-xl font-semibold truncate cursor-pointer hover:underline" onclick="navigateTo('product', ${product.id}, true)">
+                        ${product.name}
+                    </h3>
+                    <p class="text-lg font-bold mt-1">${formatPrice(product.price)}</p>
+                    <p class="text-sm text-gray-500 dark-mode:text-gray-400">Category: ${product.category}</p>
+                </div>
+                
+                <div class="flex flex-col space-y-2 w-full md:w-48 flex-shrink-0">
                     <button 
-                        onclick="removeCartItem(${item.id})" 
-                        class="text-gray-500 hover:text-red-600 dark-mode:text-gray-400"
-                        aria-label="Remove ${item.name} from cart"
+                        class="btn-primary py-2 text-sm" 
+                        onclick="moveToCart(${product.id})"
                     >
-                        ✕
+                        Move to Cart
+                    </button>
+                    <button 
+                        class="text-red-600 hover:text-red-800 dark-mode:text-red-400 text-sm" 
+                        onclick="removeFromWishlist(${product.id})"
+                    >
+                        Remove ✕
                     </button>
                 </div>
             </div>
@@ -257,936 +922,85 @@ function updateCartDisplay() {
     }).join('');
 
     container.innerHTML = itemsHtml;
-    updateCartSummary(subtotal, 0, totalItems, 'Calculated at checkout');
-}
-
-function updateCartSummary(subtotal, shipping, totalItems, shippingText) {
-    const summarySubtotalElement = document.getElementById('summary-subtotal');
-    const summaryTotalElement = document.getElementById('summary-total');
-    const summaryItemCountElement = document.getElementById('summary-item-count');
-    const shippingElement = document.getElementById('summary-shipping');
-
-    if (summarySubtotalElement) summarySubtotalElement.textContent = formatPrice(subtotal);
-    if (summaryTotalElement) summaryTotalElement.textContent = formatPrice(subtotal + shipping);
-    if (summaryItemCountElement) summaryItemCountElement.textContent = totalItems;
-    if (shippingElement) shippingElement.textContent = shippingText;
 }
 
 
 // ==========================================================
-// 4. CHECKOUT LOGIC
+// 9. ACCOUNT & LOGIN LOGIC (Mock)
 // ==========================================================
 
-function updateCheckoutTotals() {
-    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    
-    let discount = subtotal > 500 ? subtotal * 0.10 : 0.00;
-    
-    let shipping = checkoutState.shipping.method === 'express' ? 25.00 : 0.00;
-
-    let taxableBase = subtotal - discount + shipping;
-    let tax = taxableBase * checkoutState.totals.taxRate;
-    let total = taxableBase + tax;
-
-    checkoutState.totals.subtotal = subtotal;
-    checkoutState.totals.discount = discount;
-    checkoutState.totals.shipping = shipping;
-    checkoutState.totals.tax = tax;
-    checkoutState.totals.total = total;
-
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
-    const checkoutSummaryItemCount = document.getElementById('checkout-summary-item-count');
-    if(checkoutSummaryItemCount) checkoutSummaryItemCount.textContent = totalItems;
-    const checkoutSummarySubtotal = document.getElementById('checkout-summary-subtotal');
-    if(checkoutSummarySubtotal) checkoutSummarySubtotal.textContent = formatPrice(subtotal);
-    const checkoutSummaryDiscount = document.getElementById('checkout-summary-discount');
-    if(checkoutSummaryDiscount) checkoutSummaryDiscount.textContent = formatPrice(discount * -1);
-    const checkoutSummaryShippingCost = document.getElementById('checkout-summary-shipping-cost');
-    if(checkoutSummaryShippingCost) checkoutSummaryShippingCost.textContent = shipping === 0 ? 'Free' : formatPrice(shipping);
-    const checkoutSummaryTaxes = document.getElementById('checkout-summary-taxes');
-    if(checkoutSummaryTaxes) checkoutSummaryTaxes.textContent = formatPrice(tax);
-    const checkoutSummaryTotal = document.getElementById('checkout-summary-total');
-    if(checkoutSummaryTotal) checkoutSummaryTotal.textContent = formatPrice(total);
-}
-
-function setCheckoutStep(stepNumber, animate = true) {
-    if (stepNumber === 1 && cart.length === 0) {
-         showToast('Your cart is empty. Cannot proceed to checkout.');
-         navigateTo('shop');
-         return;
-    }
-    
-    if (stepNumber > checkoutState.step) {
-        if (checkoutState.step === 1 && !validateShipping()) return;
-        if (checkoutState.step === 2 && !validatePayment()) return;
-    }
-
-    checkoutState.step = stepNumber;
-    
-    document.querySelectorAll('.stepper-item').forEach((item, index) => {
-        item.classList.remove('active', 'complete');
-        const step = index + 1;
-        
-        if (step < stepNumber) {
-            item.classList.add('complete');
-        } else if (step === stepNumber) {
-            item.classList.add('active');
-        }
-    });
-
-    document.querySelectorAll('.checkout-step').forEach((stepEl, index) => {
-        const step = index + 1;
-        if (step === stepNumber) {
-            stepEl.classList.remove('hidden');
-            stepEl.setAttribute('aria-hidden', 'false');
-            if (animate) stepEl.classList.add('slide-in-right');
-            if (step === 3) {
-                updateReviewStep();
-            }
-        } else {
-            stepEl.classList.add('hidden');
-            stepEl.classList.remove('slide-in-right');
-            stepEl.setAttribute('aria-hidden', 'true');
-        }
-    });
-    
-    updateShippingState();
-    updateCheckoutTotals();
-    
-    document.getElementById('page-checkout')?.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function updateShippingState() {
-    const shippingForm = document.getElementById('shipping-form');
-    if (!shippingForm) return;
-
-    checkoutState.shipping.firstName = shippingForm.querySelector('#shipping-first-name').value;
-    checkoutState.shipping.lastName = shippingForm.querySelector('#shipping-last-name').value;
-    checkoutState.shipping.email = shippingForm.querySelector('#shipping-email').value;
-    checkoutState.shipping.address1 = shippingForm.querySelector('#shipping-address1').value;
-    checkoutState.shipping.address2 = shippingForm.querySelector('#shipping-address2').value;
-    checkoutState.shipping.city = shippingForm.querySelector('#shipping-city').value;
-    checkoutState.shipping.state = shippingForm.querySelector('#shipping-state').value;
-    checkoutState.shipping.zip = shippingForm.querySelector('#shipping-zip').value;
-    checkoutState.shipping.country = shippingForm.querySelector('#shipping-country').value;
-    
-    const selectedMethodInput = shippingForm.querySelector('input[name="shipping-method"]:checked');
-    if (selectedMethodInput) {
-        checkoutState.shipping.method = selectedMethodInput.value;
-    } else {
-        checkoutState.shipping.method = 'standard';
-    }
-    
-    checkoutState.shipping.cost = checkoutState.shipping.method === 'express' ? 25.00 : 0.00;
-    
-    updateCheckoutTotals();
-}
-
-function updateReviewStep() {
-    const s = checkoutState.shipping;
-    const reviewShippingDetails = document.getElementById('review-shipping-details');
-    if (reviewShippingDetails) {
-        reviewShippingDetails.innerHTML = `
-            <p><strong>Contact:</strong> ${s.firstName} ${s.lastName} (${s.email})</p>
-            <p><strong>Address:</strong> ${s.address1}${s.address2 ? ', ' + s.address2 : ''}, ${s.city}, ${s.state} ${s.zip}, ${s.country}</p>
-            <p><strong>Method:</strong> ${s.method === 'express' ? 'Express Shipping' : 'Standard Shipping'} (${s.cost === 0 ? 'Free' : formatPrice(s.cost)})</p>
-        `;
-    }
-    
-    const p = checkoutState.payment;
-    const reviewPaymentDetails = document.getElementById('review-payment-details');
-    if (reviewPaymentDetails) {
-        reviewPaymentDetails.innerHTML = `
-            <p><strong>Method:</strong> ${p.method === 'card' ? 'Credit/Debit Card' : (p.method === 'paypal' ? 'PayPal' : 'Gift Card')}</p>
-            <p><strong>Card:</strong> ${p.method === 'card' ? `ending in **** ${p.last4}` : 'N/A'}</p>
-        `;
-    }
-
-    const reviewItemsContainer = document.getElementById('review-items-container');
-    const reviewItemCount = document.getElementById('review-item-count');
-
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    if(reviewItemCount) reviewItemCount.textContent = totalItems;
-    
-    if (reviewItemsContainer) {
-        reviewItemsContainer.innerHTML = cart.map(item => `
-            <div class="flex justify-between text-sm text-gray-700 dark-mode:text-gray-400 border-b border-gray-100 dark-mode:border-gray-800 py-2">
-                <span>${item.name} (x${item.quantity})</span>
-                <span>${formatPrice(item.price * item.quantity)}</span>
-            </div>
-        `).join('');
-    }
-}
-
-
-function validateShipping() {
-    const form = document.getElementById('shipping-form');
-    if (!form) return false;
-    
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        showToast('Please fill out all required shipping fields.');
-        return false;
-    }
-    updateShippingState();
-    return true;
-}
-
-function validatePayment() {
-    const form = document.getElementById('payment-form');
-    if (!form) return false;
-
-    if (!form.checkValidity()) {
-        form.reportValidity();
-        showToast('Please fill out all required payment fields.');
-        return false;
-    }
-    
-    const selectedMethodInput = form.querySelector('input[name="payment-method"]:checked');
-    if (selectedMethodInput) {
-        checkoutState.payment.method = selectedMethodInput.value;
-    } else {
-        checkoutState.payment.method = 'card';
-    }
-    
-    if (checkoutState.payment.method === 'card') {
-        const cardNumberInput = form.querySelector('#card-number');
-        const cardNameInput = form.querySelector('#card-name');
-        
-        if (cardNumberInput && cardNameInput) {
-            checkoutState.payment.last4 = cardNumberInput.value.slice(-4);
-            checkoutState.payment.name = cardNameInput.value;
-        } else {
-            checkoutState.payment.last4 = '1234'; 
-            checkoutState.payment.name = 'Mock User'; 
-        }
-    } else {
-         checkoutState.payment.last4 = 'N/A';
-         checkoutState.payment.name = 'N/A';
-    }
-    
-    return true;
-}
-
-function toggleBillingAddress() {
-    const checkbox = document.getElementById('same-as-shipping');
-    const fields = document.getElementById('billing-address-fields');
-    if (checkbox && fields) {
-        if (checkbox.checked) {
-            fields.classList.add('hidden');
-        } else {
-            fields.classList.remove('hidden');
-        }
-    }
-}
-
-function placeOrder() {
-    if (cart.length === 0) {
-        showToast('Cannot place order. Your cart is empty.');
-        navigateTo('shop');
-        return;
-    }
-
-    const orderDetails = {
-        id: Date.now(),
-        items: JSON.parse(JSON.stringify(cart)),
-        shipping: JSON.parse(JSON.stringify(checkoutState.shipping)),
-        payment: JSON.parse(JSON.stringify(checkoutState.payment)),
-        totals: JSON.parse(JSON.stringify(checkoutState.totals)),
-        date: new Date().toLocaleDateString('en-US'),
-        status: 'Processing'
-    };
-    
-    const placeOrderBtn = document.getElementById('place-order-btn');
-    if (placeOrderBtn) {
-        placeOrderBtn.textContent = 'Processing...';
-        placeOrderBtn.disabled = true;
-    }
-
-    setTimeout(() => {
-        user.orders.unshift(orderDetails);
-        saveUserState();
-        
-        clearCart(); 
-
-        showToast(`Order #${orderDetails.id} successfully placed! Total: ${formatPrice(orderDetails.totals.total)}`);
-        
-        if (placeOrderBtn) {
-            placeOrderBtn.textContent = 'Place Order';
-            placeOrderBtn.disabled = false;
-        }
-        
-        navigateTo('home');
-
-    }, 2000);
-}
-
-
-// ==========================================================
-// 5. ACCOUNT & AUTHENTICATION LOGIC
-// ==========================================================
-
-function saveUserState() {
-    localStorage.setItem('isAuthenticated', isAuthenticated);
-    localStorage.setItem('user', JSON.stringify(user));
-}
-
-function updateAccountPage() {
-    const dashboard = document.getElementById('account-dashboard');
-    const authForms = document.getElementById('login-register-forms');
-    const accountHeading = document.getElementById('account-heading');
-    const orderCount = document.getElementById('order-count');
-
-    if (!dashboard || !authForms || !accountHeading || !orderCount) return;
-    
-    if (isAuthenticated) {
-        dashboard.classList.remove('hidden');
-        authForms.classList.add('hidden');
-        accountHeading.textContent = 'My Account';
-        document.getElementById('account-user-name').textContent = user.name.split(' ')[0];
-        orderCount.textContent = user.orders.length;
-        showAccountSection('overview');
-    } else {
-        dashboard.classList.add('hidden');
-        authForms.classList.remove('hidden');
-        accountHeading.textContent = 'Sign In / Register';
-        toggleAuthForm('login');
-    }
-}
-
-function toggleAuthForm(formType) {
-    const loginPanel = document.getElementById('login-panel');
-    const registerPanel = document.getElementById('register-panel');
-    const loginTab = document.getElementById('login-tab');
-    const registerTab = document.getElementById('register-tab');
-
-    if (formType === 'login') {
-        loginPanel.classList.remove('hidden');
-        registerPanel.classList.add('hidden');
-        loginTab.classList.add('border-gray-900');
-        loginTab.classList.remove('border-transparent', 'text-gray-500');
-        registerTab.classList.remove('border-gray-900');
-        registerTab.classList.add('border-transparent', 'text-gray-500');
-        loginTab.setAttribute('aria-selected', 'true');
-        registerTab.setAttribute('aria-selected', 'false');
-    } else {
-        loginPanel.classList.add('hidden');
-        registerPanel.classList.remove('hidden');
-        registerTab.classList.add('border-gray-900');
-        registerTab.classList.remove('border-transparent', 'text-gray-500');
-        loginTab.classList.remove('border-gray-900');
-        loginTab.classList.add('border-transparent', 'text-gray-500');
-        loginTab.setAttribute('aria-selected', 'false');
-        registerTab.setAttribute('aria-selected', 'true');
-    }
-}
-
-function login() {
+function mockLogin() {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
-
-    if (!email || !password) {
-        showToast('Please enter both email and password.');
-        return;
-    }
     
-    // Mock login logic
-    if (email === 'user@test.com' && password === 'password') {
-        user.name = 'Mock Customer';
-        user.email = email;
+    if ((email === 'user@test.com' && password === 'password') || (email === 'admin@luxe.com' && password === '12345')) {
+        loggedInUser = { email: email, name: email.split('@')[0], isAdmin: email.includes('admin') };
+        localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+        updateAccountView();
+        showToast(`Welcome, ${loggedInUser.name}!`);
     } else {
-        user.name = 'New User';
-        user.email = email;
-    }
-    isAuthenticated = true;
-    saveUserState();
-    updateAccountPage();
-    showToast(`Successfully logged in as ${user.name.split(' ')[0]}. (Mock)`);
-}
-
-function register() {
-    const name = document.getElementById('register-name').value;
-    const email = document.getElementById('register-email').value;
-    const password = document.getElementById('register-password').value;
-
-    if (!name || !email || !password) {
-        showToast('Please fill out all registration fields.');
-        return;
-    }
-    
-    user.name = name;
-    user.email = email;
-    isAuthenticated = true;
-    saveUserState();
-    updateAccountPage();
-    showToast(`Account created successfully! Welcome, ${user.name.split(' ')[0]}.`);
-}
-
-function logout() {
-    isAuthenticated = false;
-    user = { name: 'Guest', email: '', orders: user.orders };
-    localStorage.removeItem('isAuthenticated');
-    localStorage.removeItem('user');
-    updateAccountPage();
-    showToast('You have been logged out.');
-}
-
-function showAccountSection(section) {
-    const detailSection = document.getElementById('account-detail-section');
-    if (!detailSection) return;
-
-    detailSection.innerHTML = '';
-    
-    document.querySelectorAll('#account-dashboard nav button').forEach(btn => {
-         btn.classList.remove('bg-gray-100', 'dark-mode:bg-gray-800');
-         if (btn.textContent.toLowerCase().includes(section)) {
-             btn.classList.add('bg-gray-100', 'dark-mode:bg-gray-800');
-         }
-    });
-    
-    switch (section) {
-        case 'overview':
-             detailSection.innerHTML = `
-                <h3 class="text-2xl font-bold mb-4">Account Overview</h3>
-                <p class="text-lg">You are currently logged in as: <strong>${user.name}</strong> (${user.email})</p>
-                <p class="mt-4 text-gray-700 dark-mode:text-gray-400">From your account dashboard, you can view your recent orders, manage your shipping and billing addresses, and edit your password and account details.</p>
-                <button class="btn-primary mt-6" onclick="showAccountSection('profile')">Edit Profile</button>
-            `;
-            break;
-        case 'orders':
-            if (user.orders.length === 0) {
-                detailSection.innerHTML = `<h3 class="text-2xl font-bold mb-4">Order History</h3><p class="text-gray-600 dark-mode:text-gray-400">You haven't placed any orders yet.</p>`;
-            } else {
-                const orderList = user.orders.map(order => `
-                    <div class="p-4 border border-gray-200 dark-mode:border-gray-700 mb-4 bg-white dark-mode:bg-gray-700">
-                        <div class="flex justify-between items-center font-bold mb-2">
-                            <span>Order #${order.id}</span>
-                            <span>${formatPrice(order.totals.total)}</span>
-                        </div>
-                        <p class="text-sm text-gray-600 dark-mode:text-gray-400">Placed on: ${order.date} | Status: <span class="text-green-600">${order.status}</span></p>
-                        <p class="text-sm text-gray-600 dark-mode:text-gray-400">Items: ${order.items.reduce((sum, item) => sum + item.quantity, 0)} total items</p>
-                    </div>
-                `).join('');
-                detailSection.innerHTML = `<h3 class="text-2xl font-bold mb-4">Order History (${user.orders.length})</h3>${orderList}`;
-            }
-            break;
-        case 'profile':
-            detailSection.innerHTML = `
-                <h3 class="text-2xl font-bold mb-4">Profile Details</h3>
-                <form class="space-y-4">
-                    <label class="block">
-                        <span class="text-gray-700 dark-mode:text-gray-400">Name</span>
-                        <input type="text" value="${user.name}" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 focus:ring-gray-900 focus:border-gray-900 dark-mode:bg-gray-800">
-                    </label>
-                    <label class="block">
-                        <span class="text-gray-700 dark-mode:text-gray-400">Email Address</span>
-                        <input type="email" value="${user.email}" disabled class="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-3 bg-gray-100 cursor-not-allowed dark-mode:bg-gray-900">
-                    </label>
-                    <button type="button" class="btn-primary" onclick="showToast('Profile updated! (Mock)')">Save Changes</button>
-                </form>
-            `;
-            break;
-        case 'addresses':
-            detailSection.innerHTML = `
-                <h3 class="text-2xl font-bold mb-4">Manage Addresses</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="p-4 border border-gray-200 dark-mode:border-gray-700 bg-white dark-mode:bg-gray-700">
-                        <h4 class="font-semibold mb-2">Default Shipping Address</h4>
-                        <p class="text-sm text-gray-600 dark-mode:text-gray-400">John Doe</p>
-                        <p class="text-sm text-gray-600 dark-mode:text-gray-400">123 Mock Lane</p>
-                        <p class="text-sm text-gray-600 dark-mode:text-gray-400">New York, NY 10001</p>
-                        <button class="text-sm mt-3 text-gray-600 hover:text-gray-900 underline dark-mode:text-gray-400 dark-mode:hover:text-white" onclick="showToast('Editing address... (Mock)')">Edit</button>
-                    </div>
-                    <div class="p-4 border border-gray-200 dark-mode:border-gray-700 bg-white dark-mode:bg-gray-700">
-                        <h4 class="font-semibold mb-2">Default Billing Address</h4>
-                        <p class="text-sm text-gray-600 dark-mode:text-gray-400">Same as Shipping</p>
-                        <button class="text-sm mt-3 text-gray-600 hover:text-gray-900 underline dark-mode:text-gray-400 dark-mode:hover:text-white" onclick="showToast('Adding new address... (Mock)')">Add New Address</button>
-                    </div>
-                </div>
-            `;
-            break;
-        default:
-            showAccountSection('overview');
+        showToast('Invalid credentials. Try user@test.com / password');
     }
 }
 
-
-// ==========================================================
-// 6. ADMIN DASHBOARD LOGIC
-// ==========================================================
-
-function initAdminDashboard() {
-    if (document.getElementById('admin-dashboard-section')) {
-        if (isAdminAuthenticated) {
-            showAdminDashboard();
-        } else {
-            showAdminLogin();
-        }
-        document.getElementById('product-form')?.addEventListener('submit', handleProductSubmit);
-    }
+function mockLogout() {
+    loggedInUser = null;
+    localStorage.removeItem('loggedInUser');
+    updateAccountView();
+    showToast('Logged out successfully.');
 }
 
-function showAdminLogin() {
-    document.getElementById('admin-login-section').classList.remove('hidden');
-    document.getElementById('admin-dashboard-section').classList.add('hidden');
-    document.getElementById('admin-nav').classList.add('hidden');
-}
-
-function showAdminDashboard() {
-    document.getElementById('admin-login-section').classList.add('hidden');
-    document.getElementById('admin-dashboard-section').classList.remove('hidden');
-    document.getElementById('admin-nav').classList.remove('hidden');
+function updateAccountView() {
+    const loginPanel = document.getElementById('account-login-panel');
+    const dashboardPanel = document.getElementById('account-dashboard-panel');
     
-    renderAdminStats();
-    showAdminTab('products'); 
-}
-
-function adminLogin() {
-    const email = document.getElementById('admin-email').value;
-    const password = document.getElementById('admin-password').value;
-
-    if (email === 'admin@luxe.com' && password === '12345') {
-        isAdminAuthenticated = true;
-        sessionStorage.setItem('isAdminAuthenticated', 'true');
-        showAdminDashboard();
-        showToast('Admin logged in successfully!');
-    } else {
-        showToast('Invalid admin credentials.');
-    }
-}
-
-function adminLogout() {
-    isAdminAuthenticated = false;
-    sessionStorage.removeItem('isAdminAuthenticated');
-    showAdminLogin();
-    showToast('Admin logged out.');
-}
-
-function renderAdminStats() {
-    const totalOrders = user.orders.length;
-    const totalRevenue = user.orders.reduce((sum, order) => sum + order.totals.total, 0);
-    const totalProducts = products.length;
-    const newCustomers = user.orders.length > 0 ? 1 : 0; 
-    
-    document.getElementById('stat-revenue').textContent = formatPrice(totalRevenue);
-    document.getElementById('stat-orders').textContent = totalOrders;
-    document.getElementById('stat-products').textContent = totalProducts;
-    document.getElementById('stat-customers').textContent = newCustomers;
-}
-
-function showAdminTab(tabName) {
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-    document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
-
-    const tabContent = document.getElementById(`tab-${tabName}`);
-    const tabButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
-    
-    if (tabContent && tabButton) {
-        tabContent.classList.remove('hidden');
-        tabButton.classList.add('active');
+    if (loggedInUser) {
+        loginPanel.style.display = 'none';
+        dashboardPanel.style.display = 'block';
         
-        if (tabName === 'products') {
-            renderProductTable();
-        } else if (tabName === 'orders') {
-            renderOrderTable();
-        }
+        document.getElementById('account-user-name').textContent = loggedInUser.name;
+        document.getElementById('account-user-email').textContent = loggedInUser.email;
+        updateAccountWishlistCount();
+        showOrderHistory(false); // Hide table by default on view
+    } else {
+        loginPanel.style.display = 'block';
+        dashboardPanel.style.display = 'none';
     }
 }
 
-// --- Product Management (CRUD) ---
-
-function saveProducts() {
-    localStorage.setItem('products', JSON.stringify(products));
-    if (document.getElementById('page-shop')?.classList.contains('active')) {
-        renderProducts(products);
-    }
+function updateAccountWishlistCount() {
+    document.getElementById('wishlist-count-account').textContent = wishlist.length;
 }
 
-function renderProductTable() {
-    const tbody = document.getElementById('product-table-body');
-    if (!tbody) return;
+function showOrderHistory(toggle = true) {
+    const historySection = document.getElementById('order-history-section');
+    const historyBody = document.getElementById('order-history-body');
 
-    tbody.innerHTML = products.map(p => `
-        <tr class="hover:bg-gray-50 border-b border-gray-100">
-            <td class="py-3 px-4 text-sm">${p.id}</td>
-            <td class="py-3 px-4 font-medium">${p.name}</td>
-            <td class="py-3 px-4">${formatPrice(p.price)}</td>
-            <td class="py-3 px-4">${p.category}</td>
-            <td class="py-3 px-4 flex gap-2">
-                <button class="text-indigo-600 hover:text-indigo-900 text-sm" onclick="openProductModal(${p.id})">Edit</button>
-                <button class="text-red-600 hover:text-red-900 text-sm" onclick="deleteProduct(${p.id})">Delete</button>
+    if (toggle) {
+        historySection.style.display = historySection.style.display === 'none' ? 'block' : 'none';
+    } else if (historySection.style.display === 'none') {
+        // If we are just refreshing the view and it's hidden, don't proceed
+        return;
+    }
+
+    const userOrders = orderHistory.filter(order => order.id > 0); // Mock all orders for simplicity
+    document.getElementById('total-orders').textContent = userOrders.length;
+    
+    if (userOrders.length === 0) {
+        historyBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">No orders found.</td></tr>`;
+        return;
+    }
+    
+    historyBody.innerHTML = userOrders.map(order => `
+        <tr class="hover:bg-gray-50 dark-mode:hover:bg-gray-800">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">#${order.id.toString().padStart(4, '0')}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">${order.date}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">${formatPrice(order.total)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.status === 'Processing' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
+                    ${order.status}
+                </span>
             </td>
         </tr>
     `).join('');
 }
-
-function openProductModal(productId = null) {
-    const modal = document.getElementById('product-modal');
-    const form = document.getElementById('product-form');
-    const title = document.getElementById('product-modal-title');
-    const submitBtn = document.getElementById('modal-submit-btn');
-
-    form.reset(); 
-
-    if (productId) {
-        const product = products.find(p => p.id === productId);
-        if (product) {
-            title.textContent = 'Edit Product';
-            submitBtn.textContent = 'Save Changes';
-            document.getElementById('modal-product-id').value = product.id;
-            document.getElementById('modal-name').value = product.name;
-            document.getElementById('modal-price').value = product.price;
-            document.getElementById('modal-category').value = product.category;
-            document.getElementById('modal-tags').value = product.tags.join(', ');
-        }
-    } else {
-        title.textContent = 'Add New Product';
-        submitBtn.textContent = 'Add Product';
-        document.getElementById('modal-product-id').value = ''; 
-    }
-
-    if (modal) modal.classList.add('active');
-}
-
-function closeProductModal() {
-    document.getElementById('product-modal').classList.remove('active');
-}
-
-function handleProductSubmit(event) {
-    event.preventDefault();
-    
-    const id = document.getElementById('modal-product-id').value;
-    const name = document.getElementById('modal-name').value;
-    const price = parseFloat(document.getElementById('modal-price').value);
-    const category = document.getElementById('modal-category').value;
-    const tagsString = document.getElementById('modal-tags').value;
-    const tags = tagsString.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0);
-    
-    if (id) {
-        const index = products.findIndex(p => p.id == id);
-        if (index !== -1) {
-            products[index] = { ...products[index], name, price, category, tags };
-            showToast(`Product ${name} updated successfully.`);
-        }
-    } else {
-        const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
-        const newProduct = {
-            id: newId, 
-            name, 
-            price, 
-            category, 
-            color: 'TBD', 
-            size: 'TBD', 
-            rating: 5, 
-            tags, 
-            new: true 
-        };
-        products.push(newProduct);
-        showToast(`Product ${name} added successfully.`);
-    }
-
-    saveProducts();
-    renderProductTable();
-    closeProductModal();
-}
-
-function deleteProduct(productId) {
-    if (confirm(`Are you sure you want to delete Product ID ${productId}?`)) {
-        products = products.filter(p => p.id !== productId);
-        saveProducts();
-        renderProductTable();
-        showToast(`Product ID ${productId} deleted.`);
-    }
-}
-
-// --- Order Management ---
-
-function renderOrderTable() {
-    const tbody = document.getElementById('order-table-body');
-    if (!tbody) return;
-
-    const orders = [...user.orders].reverse(); // Show newest orders first
-    
-    tbody.innerHTML = orders.map(order => {
-        let statusColor = 'text-blue-600';
-        if (order.status === 'Shipped') statusColor = 'text-green-600';
-        if (order.status === 'Canceled') statusColor = 'text-red-600';
-        
-        const customerName = order.shipping.firstName + ' ' + order.shipping.lastName;
-
-        return `
-            <tr class="hover:bg-gray-50 border-b border-gray-100">
-                <td class="py-3 px-4 text-sm">${order.id}</td>
-                <td class="py-3 px-4">${customerName}</td>
-                <td class="py-3 px-4 font-bold">${formatPrice(order.totals.total)}</td>
-                <td class="py-3 px-4">
-                    <span class="${statusColor} font-semibold">${order.status}</span>
-                </td>
-                <td class="py-3 px-4">
-                    <select onchange="updateOrderStatus(${order.id}, this.value)" class="p-1 border border-gray-300 rounded text-sm">
-                        <option value="${order.status}">${order.status}</option>
-                        <option value="Processing" ${order.status === 'Processing' ? 'selected' : ''}>Processing</option>
-                        <option value="Shipped" ${order.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
-                        <option value="Delivered" ${order.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
-                        <option value="Canceled" ${order.status === 'Canceled' ? 'selected' : ''}>Canceled</option>
-                    </select>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-function updateOrderStatus(orderId, newStatus) {
-    const orderIndex = user.orders.findIndex(order => order.id === orderId);
-    if (orderIndex !== -1) {
-        user.orders[orderIndex].status = newStatus;
-        saveUserState(); 
-        renderOrderTable(); 
-        showToast(`Order #${orderId} status updated to ${newStatus}.`);
-    }
-}
-
-
-// ==========================================================
-// 7. MISCELLANEOUS UI FUNCTIONS
-// ==========================================================
-
-function showToast(message) {
-    const toast = document.getElementById('toast-notification');
-    if (toast) {
-        toast.textContent = message;
-        toast.classList.add('active');
-        setTimeout(() => {
-            toast.classList.remove('active');
-        }, 3000);
-    }
-}
-
-function applyCoupon() {
-    const couponInput = document.getElementById('coupon-input');
-    const coupon = couponInput ? couponInput.value : '';
-    if (coupon.length > 0) {
-        showToast(`Coupon "${coupon}" applied! (Mock: Discount calculated in totals)`);
-        updateCheckoutTotals();
-    } else {
-        showToast('Please enter a coupon code.');
-    }
-}
-
-let filteredProducts = products;
-function renderProducts(productArray) {
-    const grid = document.getElementById('products-grid');
-    if (!grid) return;
-
-    const startIndex = (currentPage - 1) * productsPerPage;
-    const paginatedProducts = productArray.slice(startIndex, startIndex + productsPerPage);
-    
-    const totalPages = Math.ceil(productArray.length / productsPerPage);
-    const paginationInfo = document.getElementById('pagination-info');
-    if (paginationInfo) paginationInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-    const productCount = document.getElementById('product-count');
-    if (productCount) productCount.textContent = productArray.length;
-    
-    grid.innerHTML = paginatedProducts.map(product => `
-        <article class="product-card bg-white dark-mode:bg-gray-700 p-4 border border-gray-100 dark-mode:border-gray-800 rounded" onclick="navigateTo('product', ${product.id})" tabindex="0" role="link">
-            <div class="product-image">
-                <span class="text-6xl" aria-hidden="true">${product.id % 2 === 0 ? '👚' : '👖'}</span>
-            </div>
-            <div class="pt-4">
-                <p class="text-sm text-gray-500 dark-mode:text-gray-400">${product.category}</p>
-                <h3 class="text-xl font-semibold mt-1">${product.name}</h3>
-                <p class="text-lg font-bold mt-2">${formatPrice(product.price)}</p>
-                <div class="stars mt-1 text-yellow-500" aria-label="Rating: ${product.rating} out of 5 stars">${'★'.repeat(product.rating)}${'☆'.repeat(5 - product.rating)}</div>
-                <button class="btn-primary w-full mt-4" onclick="event.stopPropagation(); addToCart(${product.id});">Add to Cart</button>
-            </div>
-        </article>
-    `).join('');
-}
-function loadFeaturedProducts() {
-    const featuredGrid = document.getElementById('featured-products');
-    if (!featuredGrid) return;
-    const featured = products.filter(p => p.new).slice(0, 4);
-    featuredGrid.innerHTML = featured.map(product => `
-        <article class="product-card text-center bg-white dark-mode:bg-gray-700 p-4 shadow-sm" onclick="navigateTo('product', ${product.id})" tabindex="0" role="link">
-            <div class="product-image" aria-hidden="true">
-                <span class="text-6xl">${product.id % 2 === 0 ? '👚' : '👖'}</span>
-            </div>
-            <h3 class="text-xl font-semibold mt-4">${product.name}</h3>
-            <p class="text-lg font-bold mt-1">${formatPrice(product.price)}</p>
-        </article>
-    `).join('');
-}
-function renderProductDetail(id) {
-    const product = products.find(p => p.id === id);
-    if (!product) return;
-    const productTitle = document.getElementById('product-title');
-    if(productTitle) productTitle.textContent = product.name;
-    const productPrice = document.getElementById('product-price');
-    if(productPrice) productPrice.textContent = formatPrice(product.price);
-    const productDescription = document.getElementById('product-description');
-    if(productDescription) productDescription.textContent = 'This is a detailed description for the ' + product.name + '. It is made of the finest materials and embodies our brand\'s commitment to quality and luxury.';
-    const productBreadcrumb = document.getElementById('product-breadcrumb');
-    if(productBreadcrumb) productBreadcrumb.textContent = product.name;
-    const mainProductImage = document.getElementById('main-product-image');
-    if(mainProductImage) mainProductImage.innerHTML = `<span class="text-8xl">${product.id % 2 === 0 ? '👚' : '👖'}</span>`;
-    const productSku = document.getElementById('product-sku');
-    if(productSku) productSku.textContent = `SKU: LUX-TS-${product.id.toString().padStart(3, '0')}`;
-    const cartButton = document.getElementById('detail-add-to-cart');
-    if(cartButton) {
-        cartButton.onclick = () => { 
-            const quantityInput = document.getElementById('quantity-input');
-            const quantity = quantityInput ? quantityInput.value : 1;
-            addToCart(product.id, quantity); 
-        };
-    }
-}
-
-function sortProducts() {
-    const sortSelect = document.getElementById('sort-select');
-    if (!sortSelect) return;
-    currentSort = sortSelect.value;
-    let sortedProducts = [...filteredProducts]; 
-    switch (currentSort) {
-        case 'price-low':
-            sortedProducts.sort((a, b) => a.price - b.price);
-            break;
-        case 'price-high':
-            sortedProducts.sort((a, b) => b.price - a.price);
-            break;
-        case 'rating':
-            sortedProducts.sort((a, b) => b.rating - a.rating);
-            break;
-        case 'newest':
-        default:
-            sortedProducts.sort((a, b) => b.id - a.id);
-            break;
-    }
-    currentPage = 1;
-    renderProducts(sortedProducts);
-    filteredProducts = sortedProducts; 
-}
-function applyFilters() {
-    currentFilters = {};
-    document.querySelectorAll('.filter-group input:checked').forEach(checkbox => {
-        const filterType = checkbox.getAttribute('data-filter');
-        const filterValue = checkbox.value;
-        if (!currentFilters[filterType]) {
-            currentFilters[filterType] = [];
-        }
-        currentFilters[filterType].push(filterValue);
-    });
-    filteredProducts = products.filter(product => {
-        let passesAllFilters = true;
-        for (const type in currentFilters) {
-            if (currentFilters[type].length === 0) continue;
-            let passesCurrentFilter = false;
-            if (type === 'price') {
-                currentFilters[type].forEach(range => {
-                    const [min, max] = range.split('-').map(Number);
-                    if (product.price >= min && product.price <= max) {
-                        passesCurrentFilter = true;
-                    }
-                });
-            } else if (type === 'rating') {
-                currentFilters[type].forEach(minRating => {
-                    if (product.rating >= parseInt(minRating)) {
-                        passesCurrentFilter = true;
-                    }
-                });
-            } else {
-                if (currentFilters[type].includes(product[type])) {
-                    passesCurrentFilter = true;
-                }
-            }
-            if (!passesCurrentFilter) {
-                passesAllFilters = false;
-                break;
-            }
-        }
-        return passesAllFilters;
-    });
-    sortProducts(); // Sorts the new filteredProducts array
-}
-function clearFilters() {
-    document.querySelectorAll('.filter-group input:checked').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    filteredProducts = products; // Reset filtered products to all products
-    currentPage = 1;
-    sortProducts(); // Apply sorting to the full list
-}
-function changePage(direction) {
-    const totalProducts = filteredProducts.length; 
-    const totalPages = Math.ceil(totalProducts / productsPerPage);
-    const newPage = currentPage + direction;
-    if (newPage >= 1 && newPage <= totalPages) {
-        currentPage = newPage;
-        renderProducts(filteredProducts); 
-    }
-}
-function changeCurrency(newCurrency) {
-    currentCurrency = newCurrency;
-    localStorage.setItem('currency', newCurrency);
-    // Refresh all pages that show prices
-    loadFeaturedProducts();
-    renderProductDetail(products.find(p => p.id)?.id || 1); // Refresh detail page
-    updateCartDisplay();
-    updateCheckoutTotals();
-    renderAdminStats();
-    renderProductTable();
-    renderOrderTable();
-
-    if (document.getElementById('page-shop')?.classList.contains('active')) {
-        renderProducts(filteredProducts); 
-    }
-}
-function updateCountdown() {
-    const saleEnd = new Date();
-    saleEnd.setDate(saleEnd.getDate() + 7);
-    function calculateTimeRemaining() {
-        const now = new Date().getTime();
-        const distance = saleEnd - now;
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        const pad = (num) => num.toString().padStart(2, '0');
-        const daysEl = document.getElementById('countdown-days');
-        const hoursEl = document.getElementById('countdown-hours');
-        const minutesEl = document.getElementById('countdown-minutes');
-        const secondsEl = document.getElementById('countdown-seconds');
-        if (daysEl && hoursEl && minutesEl && secondsEl) {
-             daysEl.textContent = pad(days);
-             hoursEl.textContent = pad(hours);
-             minutesEl.textContent = pad(minutes);
-             secondsEl.textContent = pad(seconds);
-        }
-        if (distance < 0) {
-            clearInterval(timerInterval);
-            const promoHeading = document.getElementById('promo-heading');
-            if(promoHeading) promoHeading.textContent = "SALE ENDED!";
-            const countdownEl = document.querySelector('.countdown');
-            if(countdownEl) countdownEl.innerHTML = 'Expired!';
-        }
-    }
-    calculateTimeRemaining();
-    const timerInterval = setInterval(calculateTimeRemaining, 1000);
-}
-// MOCK functions
-function filterByCategory(category) { navigateTo('shop'); applyFilters(); showToast(`Filtered by Category: ${category}`); }
-function toggleWishlist() { showToast('Wishlist feature is a mockup!'); }
-function zoomImage() { showToast('Image Zoom Modal is a mockup!'); }
-function showReviews() { showToast('Showing all product reviews!'); }
-function selectColor(color, element) { 
-    document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
-    element.classList.add('selected');
-    document.getElementById('selected-color').textContent = color; 
-}
-function selectSize(size, element) { 
-    document.querySelectorAll('.size-option').forEach(el => el.classList.remove('selected'));
-    element.classList.add('selected');
-    document.getElementById('selected-size').textContent = size; 
-}
-function toggleSizeGuide() { showToast('Size Guide Modal will open here!'); }
-function changeMainImage(element) { showToast('Changing main product image...'); }
