@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe - Complete Ecommerce Template</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="top-banner">
+        ✦ FREE SHIPPING WORLDWIDE ON ALL ORDERS ✦
+    </div>
+
+    <header class="header">
+        <div class="header-wrapper">
+            <div class="logo-section" onclick="navigateTo('home')">
+                <div class="logo">LUXE</div>
+                <div class="tagline">Complete Ecommerce</div>
+            </div>
+            <nav class="main-nav">
+                <a onclick="navigateTo('home')">Home</a>
+                <a onclick="navigateTo('products')">Shop</a>
+                <a onclick="navigateTo('cart')">Cart</a>
+                <a onclick="navigateTo('account')">Account</a>
+            </nav>
+            <div class="header-actions">
+                <span class="search-icon">🔍</span>
+                <span class="wishlist-icon">♡</span>
+                <span class="cart-icon" onclick="navigateTo('cart')">
+                    🛒 <span class="cart-badge" id="cart-badge">0</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <div id="home" class="page active">
+        <section class="hero">
+            <div class="hero-left">
+                <h1>Complete<br>Ecommerce Solution</h1>
+                <p>A fully-featured ecommerce template with all essential pages: product listings, cart, checkout, account management, and more.</p>
+                <button class="hero-btn" onclick="navigateTo('products')">Shop Now</button>
+            </div>
+            <div class="hero-right">🛍️</div>
+        </section>
+
+        <section class="products-section">
+            <div class="section-header">
+                <h2>Featured Products</h2>
+                <p>Handpicked selections for you</p>
+            </div>
+            <div class="products-grid">
+                <div class="product-item">
+                    <div class="product-img">🧥</div>
+                    <div class="product-details">
+                        <div class="product-title">Premium Wool Coat</div>
+                        <div class="product-cat">Outerwear</div>
+                        <div class="product-price">$299</div>
+                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-img">👗</div>
+                    <div class="product-details">
+                        <div class="product-title">Silk Evening Dress</div>
+                        <div class="product-cat">Dresses</div>
+                        <div class="product-price">$249</div>
+                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-img">👕</div>
+                    <div class="product-details">
+                        <div class="product-title">Cotton Oxford Shirt</div>
+                        <div class="product-cat">Shirts</div>
+                        <div class="product-price">$89</div>
+                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-img">👖</div>
+                    <div class="product-details">
+                        <div class="product-title">Tailored Trousers</div>
+                        <div class="product-cat">Bottoms</div>
+                        <div class="product-price">$149</div>
+                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="products" class="page">
+        <section class="product-listing-section">
+            <div class="section-header">
+                <h2>All Products</h2>
+                <p>Explore our complete collection</p>
+            </div>
+            <div class="products-grid">
+                <div class="product-item">
+                    <div class="product-img">🧥</div>
+                    <div class="product-details">
+                        <div class="product-title">Premium Wool Coat</div>
+                        <div class="product-price">$299</div>
+                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-img">👞</div>
+                    <div class="product-details">
+                        <div class="product-title">Leather Loafers</div>
+                        <div class="product-price">$189</div>
+                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-img">👜</div>
+                    <div class="product-details">
+                        <div class="product-title">Leather Totebag</div>
+                        <div class="product-price">$350</div>
+                        <button class="product-add-btn" onclick="addToCart()">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="cart" class="page">
+        <div class="cart-container">
+            <div class="cart-header">
+                <h1>Your Cart</h1>
+            </div>
+            <div class="cart-content">
+                <div class="cart-items">
+                    <div class="cart-item">
+                        <div class="cart-item-img">🧥</div>
+                        <div class="cart-item-details">
+                            <h3>Premium Wool Coat</h3>
+                            <p>Size: M | Color: Black</p>
+                            <button class="remove-btn">Remove</button>
+                        </div>
+                        <div class="cart-item-price">
+                            <div class="price">$299.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cart-summary">
+                    <h2>Summary</h2>
+                    <div class="summary-row"><span>Subtotal</span><span>$299.00</span></div>
+                    <div class="summary-row"><span>Shipping</span><span>Free</span></div>
+                    <div class="summary-row total"><span>Total</span><span>$299.00</span></div>
+                    <button class="checkout-btn">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="account" class="page">
+        <div class="account-container">
+            <div class="account-sidebar">
+                <h3>My Account</h3>
+                <div class="account-nav">
+                    <button class="account-nav-item active">Orders</button>
+                    <button class="account-nav-item">Addresses</button>
+                    <button class="account-nav-item">Logout</button>
+                </div>
+            </div>
+            <div class="account-content">
+                <h2>Order History</h2>
+                <div class="orders-list">
+                    <div class="order-card">
+                        <div class="order-header">
+                            <span class="order-number">Order #10234</span>
+                            <span class="order-status">Delivered</span>
+                        </div>
+                        <p>3 Items • $450.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="#">New Arrivals</a></li>
+                    <li><a href="#">Best Sellers</a></li>
+                    <li><a href="#">Sale</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Help</h4>
+                <ul>
+                    <li><a href="#">Shipping</a></li>
+                    <li><a href="#">Returns</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>About</h4>
+                <ul>
+                    <li><a href="#">Our Story</a></li>
+                    <li><a href="#">Sustainability</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Follow Us</h4>
+                <ul>
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">Twitter</a></li>
+                    <li><a href="#">Facebook</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2024 LUXE Ecommerce Template. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
