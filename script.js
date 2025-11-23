@@ -98,22 +98,22 @@ function navigateTo(pageId, productId = null, directionHint = null) {
     // 1. Hide all pages and remove animation classes
     pages.forEach(page => {
         page.classList.remove('active', 'slide-in-ltr', 'slide-in-rtl');
+        // If we switch to relative positioning, only hide non-active pages immediately
+        page.style.display = 'none'; 
     });
     
-    // Deactivate current page's display after a short delay to allow transition
-    if (activePage) {
-        activePage.style.display = 'none';
-    }
-
     // 2. Activate target page with animation
     if (targetPage) {
-        targetPage.style.display = 'block';
+        // Must show the target page before adding the active/animation classes
+        targetPage.style.display = 'block'; 
+        
+        // Use a slight delay to ensure the browser registers the display: block before applying animation
         setTimeout(() => {
             targetPage.classList.add('active');
             if (transitionDirection) {
                 targetPage.classList.add(transitionDirection);
             }
-        }, 10); // Small delay to ensure display:block applies before animation
+        }, 10); 
 
         // 3. Trigger page-specific rendering
         if (pageId === 'shop') {
