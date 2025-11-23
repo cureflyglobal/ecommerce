@@ -3,31 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title class="lang-text" data-lang-key="confirm_title">Checkout - Review & Confirm</title>
+    <title class="lang-text" data-lang-key="checkout_title">Checkout - Shipping</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <style>
-        /* Styles to make review boxes look clean (can be added to style.css) */
-        .review-box {
-            background-color: #fff;
-            padding: 25px;
+        /* Basic Checkout Flow Styles (Add to style.css for persistence) */
+        .checkout-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+        }
+        .shipping-details {
+            flex: 2;
+            background: #fff;
+            padding: 30px;
+            border: 1px solid #eee;
+        }
+        .order-summary {
+            flex: 1;
+            background: #fafafa;
+            padding: 30px;
             border: 1px solid #ddd;
-            margin-bottom: 20px;
         }
-        .review-box h4 {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            font-size: 1.1em;
+        .checkout-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .checkout-progress span {
+            padding: 5px 10px;
+            border-bottom: 3px solid #ccc;
+            color: #ccc;
+        }
+        .checkout-progress .active {
+            color: #333;
+            border-bottom-color: #333;
+        }
+        .checkout-form label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .checkout-form input[type="text"], 
+        .checkout-form input[type="email"], 
+        .checkout-form input[type="tel"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        .form-row > div {
+            flex: 1;
+        }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .summary-total {
+            font-size: 1.2em;
             font-weight: 700;
+            margin-top: 15px;
         }
-        .review-details p {
-            margin: 5px 0;
-            font-size: 0.95em;
-        }
-        .review-details .edit-link {
-            float: right;
-            font-size: 0.9em;
+        @media (max-width: 768px) {
+            .checkout-container {
+                flex-direction: column;
+            }
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
         }
     </style>
 </head>
@@ -43,59 +97,67 @@
         <div class="checkout-container">
 
             <div class="shipping-details">
-                <h2 class="lang-text" data-lang-key="checkout_confirm_step">3. Review & Place Order</h2>
+                <h2 class="lang-text" data-lang-key="checkout_step">1. Shipping Details</h2>
                 
                 <div class="checkout-progress" role="navigation" aria-label="Checkout Steps">
-                    <a href="checkout-shipping.html" class="lang-text" data-lang-key="step_shipping_link">Shipping</a>
-                    <a href="checkout-payment.html" class="lang-text" data-lang-key="step_payment_link">Payment</a>
-                    <span class="active lang-text" data-lang-key="step_confirm">Confirmation</span>
+                    <span class="active lang-text" data-lang-key="step_shipping">Shipping</span>
+                    <span class="lang-text" data-lang-key="step_payment">Payment</span>
+                    <span class="lang-text" data-lang-key="step_confirm">Confirmation</span>
                 </div>
 
-                <div class="review-box" role="group" aria-labelledby="shipping-review-heading">
-                    <h4 id="shipping-review-heading" class="lang-text" data-lang-key="review_shipping_heading">Shipping Information</h4>
-                    <div class="review-details">
-                        <a href="checkout-shipping.html" class="edit-link lang-text" data-lang-key="edit_link">Edit</a>
-                        <p>John Doe</p>
-                        <p>123 Premium Street, Suite 400</p>
-                        <p>New York, NY 10001, United States</p>
-                        <p>Email: john.doe@example.com</p>
+                <form class="checkout-form">
+                    <h3 class="lang-text" data-lang-key="contact_info">Contact Information</h3>
+                    <div>
+                        <label for="email" class="lang-text" data-lang-key="form_email">Email</label>
+                        <input type="email" id="email" name="email" required placeholder="name@example.com">
                     </div>
-                </div>
 
-                <div class="review-box" role="group" aria-labelledby="payment-review-heading">
-                    <h4 id="payment-review-heading" class="lang-text" data-lang-key="review_payment_heading">Payment Method</h4>
-                    <div class="review-details">
-                         <a href="checkout-payment.html" class="edit-link lang-text" data-lang-key="edit_link">Edit</a>
-                        <p class="lang-text" data-lang-key="payment_card">Visa ending in **** 4567</p>
-                        <p class="lang-text" data-lang-key="payment_billing">Billing Address: Same as Shipping</p>
+                    <h3 class="lang-text" data-lang-key="shipping_address">Shipping Address</h3>
+                    <div class="form-row">
+                        <div>
+                            <label for="first-name" class="lang-text" data-lang-key="form_fname">First Name</label>
+                            <input type="text" id="first-name" name="first-name" required>
+                        </div>
+                        <div>
+                            <label for="last-name" class="lang-text" data-lang-key="form_lname">Last Name</label>
+                            <input type="text" id="last-name" name="last-name" required>
+                        </div>
                     </div>
-                </div>
-
-                <div class="review-box" role="group" aria-labelledby="items-review-heading">
-                    <h4 id="items-review-heading" class="lang-text" data-lang-key="review_items_heading">Items in Order</h4>
-                    <div class="review-details">
-                        <p>Premium Wool Coat (x1)</p>
-                        <p>Silk Evening Dress (x1)</p>
-                        <p class="edit-link"><a href="index.html#cart-section" class="lang-text" data-lang-key="edit_cart">Edit Cart</a></p>
+                    <div>
+                        <label for="address" class="lang-text" data-lang-key="form_address">Address</label>
+                        <input type="text" id="address" name="address" required>
                     </div>
-                </div>
+                    <div class="form-row">
+                        <div>
+                            <label for="city" class="lang-text" data-lang-key="form_city">City</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+                        <div>
+                            <label for="zip" class="lang-text" data-lang-key="form_zip">Zip Code</label>
+                            <input type="text" id="zip" name="zip" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="country" class="lang-text" data-lang-key="form_country">Country/Region</label>
+                        <input type="text" id="country" name="country" required value="United States">
+                    </div>
 
-                <div class="checkout-actions">
-                    <button class="button primary-button" style="width: 100%; margin-top: 20px;" aria-label="Place Final Order">
-                        <span class="lang-text" data-lang-key="place_order">Place Order</span>
-                    </button>
-                    <p class="lang-text" data-lang-key="order_final_note" style="text-align: center; margin-top: 10px; font-size: 0.9em;">
-                        By clicking "Place Order," you agree to our terms and conditions.
-                    </p>
-                </div>
-
+                    <a href="checkout-payment.html" class="button primary-button" style="width: 100%; margin-top: 30px;" aria-label="Continue to Payment">
+                        <span class="lang-text" data-lang-key="continue_payment">Continue to Payment</span>
+                    </a>
+                </form>
             </div>
 
             <div class="order-summary">
                 <h3 class="lang-text" data-lang-key="summary_heading">Order Summary</h3>
                 <div class="summary-item">
+                    <p>Premium Wool Coat (x1)</p>
+                    <p>$299.00</p>
+                </div>
+                <hr style="margin: 15px 0;">
+                <div class="summary-item">
                     <p class="lang-text" data-lang-key="subtotal">Subtotal</p>
-                    <p>$548.00</p>
+                    <p>$299.00</p>
                 </div>
                 <div class="summary-item">
                     <p class="lang-text" data-lang-key="shipping">Shipping</p>
@@ -103,7 +165,7 @@
                 </div>
                 <div class="summary-total summary-item">
                     <p class="lang-text" data-lang-key="total">Total</p>
-                    <p>$548.00</p>
+                    <p>$299.00</p>
                 </div>
             </div>
             
@@ -117,5 +179,16 @@
     </footer>
 
     <script src="script.js" defer></script>
+    <script>
+        // --- ADD TRANSLATION STRINGS TO SCRIPT.JS ---
+        // You will need to manually add these keys and their Spanish equivalents 
+        // to the 'translations' object in your existing script.js file.
+        // Example for script.js:
+        /*
+        translations['en']['checkout_title'] = 'Checkout - Shipping';
+        translations['es']['checkout_title'] = 'Pago - Envío';
+        // ... and so on for all lang-text keys
+        */
+    </script>
 </body>
 </html>
