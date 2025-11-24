@@ -5,7 +5,7 @@
  * and page navigation.
  * * Features Included:
  * 1. Mock Product Data (Initial Data)
- * 2. Core Navigation & UI Logic (Page Transitions, Dark Mode)
+ * 2. Core Navigation & UI Logic (Page Transitions, Dark Mode, Mobile Menu FIX)
  * 3. Utility & Cart/Wishlist Logic (Persistence via localStorage)
  * 4. Home Page Rendering
  * 5. Shop Page Rendering & Filtering (New Filters Added)
@@ -47,6 +47,22 @@ document.addEventListener('DOMContentLoaded', () => {
     applyInitialStyles();
     // Default navigation
     navigateTo('home');
+    
+    // --- ATTACH MOBILE MENU LISTENERS (THE FIX) ---
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenuCloseButton = document.getElementById('mobile-menu-close'); 
+
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        mobileMenuButton.addEventListener('touchstart', toggleMobileMenu); 
+    }
+    
+    // Assuming the close button is inside the mobile menu overlay
+    if (mobileMenuCloseButton) { 
+        mobileMenuCloseButton.addEventListener('click', toggleMobileMenu);
+        mobileMenuCloseButton.addEventListener('touchstart', toggleMobileMenu); 
+    }
+    // --- END MOBILE MENU LISTENERS ---
 });
 
 function loadInitialData() {
@@ -131,13 +147,26 @@ function navigateTo(pageId, productId = null, directionHint = null) {
         }
     }
     
-    // Close mobile menu if open
+    // Close mobile menu if open and unlock scrolling
     document.getElementById('mobile-menu')?.classList.remove('active');
+    document.body.classList.remove('overflow-hidden');
     window.scrollTo(0, 0); // Scroll to top on page change
 }
 
-function toggleMobileMenu() {
-    document.getElementById('mobile-menu').classList.toggle('active');
+// **MOBILE MENU FIX FUNCTION**
+function toggleMobileMenu(event) {
+    // Prevent default action for touchstart to avoid delays or ghost clicks
+    if (event && event.type === 'touchstart') {
+        event.preventDefault();
+    }
+    const menu = document.getElementById('mobile-menu');
+    const body = document.body;
+
+    if (menu) {
+        menu.classList.toggle('active');
+        // Lock body scrolling when menu is active
+        body.classList.toggle('overflow-hidden'); 
+    }
 }
 
 function toggleMobileFilters() {
@@ -395,7 +424,11 @@ function applyFilters() {
         // Price filter
         if (price.length > 0) {
             const isPriceMatch = price.some(range => {
-                const [min, max] = range.split('-').map(Number);
+                const parts = range.split('-');
+                const min = Number(parts[0]);
+                // Handle 'Over $300' (max is infinity)
+                const max = parts.length > 1 ? Number(parts[1]) : Infinity; 
+                
                 return product.price >= min && product.price < max;
             });
             if (!isPriceMatch) return false;
@@ -488,6 +521,11 @@ function renderProductGrid(productsToRender) {
 
     // Update pagination info
     paginationInfo.textContent = `Page ${totalPages > 0 ? currentPage : 0} of ${totalPages}`;
+    
+    // Update pagination buttons state
+    document.getElementById('prev-page-button').disabled = currentPage === 1;
+    document.getElementById('next-page-button').disabled = currentPage === totalPages;
+
 
     container.innerHTML = paginatedProducts.map(product => {
         const imageEmoji = product.category === "Women" ? '👚' : product.category === "Men" ? '👔' : '💍';
@@ -505,6 +543,12 @@ function renderProductGrid(productsToRender) {
             </div>
         `;
     }).join('');
+    
+    // Scroll back to the top of the grid after page change
+    const shopPage = document.getElementById('page-shop');
+    if (shopPage && shopPage.classList.contains('active')) {
+        shopPage.scrollTo(0, 0); 
+    }
 }
 
 function changePage(direction) {
@@ -515,7 +559,9 @@ function changePage(direction) {
         if (category.length > 0 && !category.includes(product.category)) return false;
         if (price.length > 0) {
             const isPriceMatch = price.some(range => {
-                const [min, max] = range.split('-').map(Number);
+                const parts = range.split('-');
+                const min = Number(parts[0]);
+                const max = parts.length > 1 ? Number(parts[1]) : Infinity;
                 return product.price >= min && product.price < max;
             });
             if (!isPriceMatch) return false;
@@ -577,10 +623,11 @@ function renderProductDetail(id) {
     // --- Render Color Variants ---
     const colorContainer = document.getElementById('variant-color-options');
     colorContainer.innerHTML = product.colors.map(color => {
-        const bgColorClass = `bg-${color.toLowerCase().replace(/\s/g, '-')}-600`;
-        const initialBgColorClass = color.toLowerCase() === 'white' ? 'bg-white' : (color.toLowerCase() === 'black' ? 'bg-black' : bgColorClass);
+        // Use inline styles for dynamic colors when a Tailwind class isn't readily available
+        const style = `background-color: ${color.toLowerCase() === 'white' ? '#fff' : color.toLowerCase() === 'gray' ? '#808080' : color.toLowerCase()}; border: 1px solid #ccc;`;
         return `
-            <div class="color-option w-8 h-8 rounded-full border ring-offset-2 hover:ring-2 cursor-pointer ${initialBgColorClass}"
+            <div class="color-option w-8 h-8 rounded-full border ring-offset-2 hover:ring-2 cursor-pointer"
+                 style="${style}" 
                  data-color="${color}" 
                  onclick="selectVariant('color', '${color}', this)"></div>
         `;
@@ -611,7 +658,7 @@ function selectVariant(type, value, element) {
     
     // Reset all others in the group
     container.querySelectorAll(`[data-${type}]`).forEach(el => {
-        el.classList.remove('bg-black', 'text-white', 'dark-mode:bg-white', 'dark-mode:text-black', 'ring-4', 'ring-offset-2', 'ring-black');
+        el.classList.remove('bg-black', 'text-white', 'dark-mode:bg-white', 'dark-mode:text-black', 'ring-4', 'ring-offset-2', 'ring-black', 'ring-gray-900');
         if (type === 'size') {
              el.classList.add('bg-white', 'text-black', 'dark-mode:bg-gray-700', 'dark-mode:text-white');
         }
@@ -621,7 +668,8 @@ function selectVariant(type, value, element) {
     if (type === 'size') {
         element.classList.add('bg-black', 'text-white', 'dark-mode:bg-white', 'dark-mode:text-black');
     } else if (type === 'color') {
-        element.classList.add('ring-4', 'ring-offset-2', 'ring-black');
+        // Use ring-black for contrast on light background, ring-gray-900 on dark mode
+        element.classList.add('ring-4', 'ring-offset-2', 'ring-gray-900');
     }
     
     selectedVariant[type] = value;
@@ -638,7 +686,6 @@ function addToCart(productId, quantity = 1) {
     if (!product) return;
     
     // Check for variant selection if needed (Simple version: only check if variants exist)
-    const hasVariants = product.sizes?.length > 0 || product.colors?.length > 0;
     const needsSize = product.sizes?.length > 0 && !selectedVariant.size;
     const needsColor = product.colors?.length > 0 && !selectedVariant.color;
 
@@ -651,7 +698,7 @@ function addToCart(productId, quantity = 1) {
     }
 
     // Create a unique cart item ID based on product ID and selected variants
-    const variantString = (selectedVariant.size || '') + (selectedVariant.color || '');
+    const variantString = (selectedVariant.size || 'STD') + (selectedVariant.color ? '-' + selectedVariant.color : '');
     const cartItemId = productId + '-' + variantString;
 
     const existingItemIndex = cart.findIndex(item => item.id === cartItemId);
@@ -701,7 +748,7 @@ function calculateCartTotals() {
     const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     const taxRate = 0.05; // Mock 5% tax
     const tax = subtotal * taxRate;
-    const total = subtotal + tax;
+    const total = subtotal + tax + shippingCost;
     
     return { subtotal, tax, total, itemCount: cart.length };
 }
@@ -714,8 +761,10 @@ function updateCartDisplay() {
     if (itemCount === 0) {
         container.innerHTML = '';
         if (emptyMessage) emptyMessage.style.display = 'block';
+        document.getElementById('checkout-button')?.classList.add('opacity-50', 'pointer-events-none');
     } else {
         if (emptyMessage) emptyMessage.style.display = 'none';
+        document.getElementById('checkout-button')?.classList.remove('opacity-50', 'pointer-events-none');
 
         container.innerHTML = cart.map(item => {
             const product = products.find(p => p.id === item.productId);
@@ -754,6 +803,11 @@ function updateCartDisplay() {
     document.getElementById('summary-items').textContent = itemCount;
     document.getElementById('summary-subtotal').textContent = formatPrice(subtotal);
     document.getElementById('summary-tax').textContent = formatPrice(tax);
+    
+    // Add shipping cost display
+    const shippingElement = document.getElementById('summary-shipping');
+    if (shippingElement) shippingElement.textContent = shippingCost > 0 ? formatPrice(shippingCost) : 'Calculated at checkout';
+
     document.getElementById('summary-total').textContent = formatPrice(total);
 }
 
@@ -773,234 +827,224 @@ function applyCoupon() {
 
 // --- Checkout Logic ---
 let currentCheckoutStep = 1;
-let shippingCost = 0; // Default to free standard shipping
+let checkoutData = {
+    shipping: { country: '', address: '', city: '', zip: '' },
+    method: 'standard',
+    payment: { card: '', expiry: '', cvv: '' }
+};
 
-function setCheckoutStep(step) {
-    if (cart.length === 0 && step > 1) {
-        showToast("Your cart is empty. Cannot proceed to checkout.");
-        navigateTo('cart', null, false);
+function initCheckout() {
+    if (cart.length === 0) {
+        showToast('Your cart is empty. Please add items to proceed.');
+        navigateTo('shop', null, false);
         return;
     }
-    
+    setCheckoutStep(1);
+}
+
+function setCheckoutStep(step) {
     currentCheckoutStep = step;
-    const steps = [1, 2, 3];
+    const steps = document.querySelectorAll('.checkout-step');
+    const sections = document.querySelectorAll('.checkout-section');
     
-    steps.forEach(s => {
-        const stepPanel = document.getElementById(`checkout-step-${s}`);
-        const stepIcon = document.getElementById(`step-icon-${s}`);
-        
-        if (stepPanel) stepPanel.style.display = s === step ? 'block' : 'none';
-        
-        if (stepIcon) {
-            stepIcon.classList.toggle('bg-black', s === step);
-            stepIcon.classList.toggle('text-white', s === step);
-            stepIcon.classList.toggle('bg-gray-300', s !== step);
-            stepIcon.classList.toggle('text-gray-700', s !== step);
-        }
+    steps.forEach((s, index) => {
+        s.classList.toggle('active', index + 1 === step);
+        s.classList.toggle('bg-black', index + 1 === step);
+        s.classList.toggle('bg-gray-200', index + 1 !== step);
+        s.classList.toggle('text-white', index + 1 === step);
+        s.classList.toggle('text-gray-500', index + 1 !== step);
+    });
+
+    sections.forEach((section, index) => {
+        section.style.display = (index + 1 === step) ? 'block' : 'none';
     });
     
-    if (step === 3) {
-        updateCheckoutSummary();
-    }
+    // Update summary with shipping if applicable
+    updateCheckoutSummary();
 }
 
 function updateShippingCost(method) {
-    shippingCost = method === 'express' ? 15.00 : 0.00;
-    if (currentCheckoutStep === 3) {
-        updateCheckoutSummary();
-    }
+    checkoutData.method = method;
+    shippingCost = (method === 'express') ? 15.00 : 0.00; // Mock rates
+    updateCheckoutSummary();
 }
 
 function updateCheckoutSummary() {
-    const { subtotal, tax, total } = calculateCartTotals();
-    const finalTotal = total + shippingCost;
+    const { subtotal, tax, total, itemCount } = calculateCartTotals();
     
-    const summaryHtml = `
-        <div class="flex justify-between"><span>Subtotal:</span><span>${formatPrice(subtotal)}</span></div>
-        <div class="flex justify-between"><span>Shipping:</span><span>${shippingCost > 0 ? formatPrice(shippingCost) : 'Free'}</span></div>
-        <div class="flex justify-between"><span>Tax:</span><span>${formatPrice(tax)}</span></div>
-        <div class="flex justify-between text-xl font-bold border-t pt-2 mt-2"><span>Total:</span><span>${formatPrice(finalTotal)}</span></div>
-    `;
-    document.getElementById('checkout-totals-summary').innerHTML = summaryHtml;
+    document.getElementById('checkout-summary-items').textContent = itemCount;
+    document.getElementById('checkout-summary-subtotal').textContent = formatPrice(subtotal);
+    document.getElementById('checkout-summary-tax').textContent = formatPrice(tax);
+    document.getElementById('checkout-summary-shipping').textContent = shippingCost > 0 ? formatPrice(shippingCost) : 'FREE';
+    document.getElementById('checkout-summary-total').textContent = formatPrice(total);
+    
+    // Render list of items
+    const itemList = document.getElementById('checkout-item-list');
+    if(itemList) {
+        itemList.innerHTML = cart.map(item => `
+            <div class="flex justify-between items-start text-sm py-1">
+                <span>${item.name} x ${item.quantity}</span>
+                <span>${formatPrice(item.price * item.quantity)}</span>
+            </div>
+        `).join('');
+    }
 }
 
-function placeOrder() {
-    if (!document.getElementById('terms-agree').checked) {
-        showToast('You must agree to the terms and conditions to place the order.');
+function processStep1() {
+    const country = document.getElementById('shipping-country').value;
+    const address = document.getElementById('shipping-address').value;
+    if (!country || !address) {
+        showToast("Please fill out all required shipping fields.");
         return;
     }
     
-    if (cart.length === 0) {
-        showToast('Cannot place an empty order.');
-        navigateTo('cart', null, false);
+    checkoutData.shipping = { country, address };
+    setCheckoutStep(2);
+}
+
+function processStep2() {
+    // Shipping method is already set via updateShippingCost listener
+    setCheckoutStep(3);
+}
+
+function processStep3() {
+    const cardNumber = document.getElementById('card-number').value;
+    const agree = document.getElementById('terms-agree').checked;
+
+    if (cardNumber.length < 16 || !agree) {
+        showToast("Please enter a valid card number and agree to the terms.");
         return;
     }
     
+    // Mock successful order
+    const orderId = 'ORD-' + Date.now().toString().slice(-6);
     const { total } = calculateCartTotals();
-    const finalTotal = total + shippingCost;
-    
-    // 1. Create Order Object (Mock)
-    const newOrder = {
-        id: orderHistory.length + 1,
+
+    orderHistory.push({
+        id: orderId,
         date: new Date().toLocaleDateString(),
-        items: cart,
-        total: finalTotal,
+        total: formatPrice(total),
         status: 'Processing',
-        shippingAddress: document.getElementById('shipping-address-1').value || 'N/A',
-        paymentMethod: 'Credit Card (Mock)'
-    };
-    
-    // 2. Update History & Clear Cart
-    orderHistory.push(newOrder);
+        items: [...cart]
+    });
     localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
-    cart = [];
+
+    cart = []; // Clear cart
     saveCart();
     
-    // 3. Provide Feedback
-    showToast(`Order #${newOrder.id} placed successfully! Total: ${formatPrice(finalTotal)}`);
-    
-    // 4. Redirect (Mocking a confirmation page)
-    navigateTo('account', null, true);
-    if (loggedInUser) showOrderHistory(); // Show the new order immediately
-}
-
-// ==========================================================
-// 8. WISHLIST PAGE RENDERING
-// ==========================================================
-
-function renderWishlistDisplay() {
-    const container = document.getElementById('wishlist-items-container');
-    const emptyMessage = document.getElementById('empty-wishlist-message');
-
-    if (!container) return;
-
-    if (wishlist.length === 0) {
-        container.innerHTML = '';
-        if (emptyMessage) emptyMessage.style.display = 'block';
-        return;
-    }
-    
-    if (emptyMessage) emptyMessage.style.display = 'none';
-
-    const itemsHtml = wishlist.map(wishlistItem => {
-        const product = products.find(p => p.id === wishlistItem.id);
-        if (!product) return ''; // Skip if product data is missing
-
-        const imageEmoji = product.category === "Women" ? '👚' : product.category === "Men" ? '👔' : '💍';
-        
-        return `
-            <div class="flex flex-col md:flex-row items-center gap-6 p-4 border border-gray-200 dark-mode:border-gray-700 bg-white dark-mode:bg-gray-700 shadow-sm">
-                
-                <div class="w-16 h-16 flex items-center justify-center bg-gray-100 dark-mode:bg-gray-600 flex-shrink-0 cursor-pointer" onclick="navigateTo('product', ${product.id}, true)">
-                    <span class="text-3xl">${imageEmoji}</span>
-                </div>
-                
-                <div class="flex-1 min-w-0 text-center md:text-left">
-                    <h3 class="text-xl font-semibold truncate cursor-pointer hover:underline" onclick="navigateTo('product', ${product.id}, true)">
-                        ${product.name}
-                    </h3>
-                    <p class="text-lg font-bold mt-1">${formatPrice(product.price)}</p>
-                    <p class="text-sm text-gray-500 dark-mode:text-gray-400">Category: ${product.category}</p>
-                </div>
-                
-                <div class="flex flex-col space-y-2 w-full md:w-48 flex-shrink-0">
-                    <button 
-                        class="btn-primary py-2 text-sm" 
-                        onclick="moveToCart(${product.id})"
-                    >
-                        Move to Cart
-                    </button>
-                    <button 
-                        class="text-red-600 hover:text-red-800 dark-mode:text-red-400 text-sm" 
-                        onclick="removeFromWishlist(${product.id})"
-                    >
-                        Remove ✕
-                    </button>
-                </div>
-            </div>
-        `;
-    }).join('');
-
-    container.innerHTML = itemsHtml;
+    // Final mock action
+    alert(`Order ${orderId} Placed Successfully!\nTotal Charged: ${formatPrice(total)}`);
+    navigateTo('home', null, false);
 }
 
 
 // ==========================================================
-// 9. ACCOUNT & LOGIN LOGIC (Mock)
+// 8. ACCOUNT & LOGIN LOGIC (Mock)
 // ==========================================================
 
 function mockLogin() {
     const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
+    const pass = document.getElementById('login-password').value;
     
-    if ((email === 'user@test.com' && password === 'password') || (email === 'admin@luxe.com' && password === '12345')) {
-        loggedInUser = { email: email, name: email.split('@')[0], isAdmin: email.includes('admin') };
+    if (email === 'user@test.com' && pass === 'password') {
+        loggedInUser = { email: email, name: 'Test User' };
         localStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+        showToast("Welcome back, Test User!");
         updateAccountView();
-        showToast(`Welcome, ${loggedInUser.name}!`);
     } else {
-        showToast('Invalid credentials. Try user@test.com / password');
+        showToast("Mock Login Failed: Invalid credentials.");
     }
 }
 
 function mockLogout() {
     loggedInUser = null;
     localStorage.removeItem('loggedInUser');
+    showToast("You have been logged out.");
     updateAccountView();
-    showToast('Logged out successfully.');
 }
 
 function updateAccountView() {
-    const loginPanel = document.getElementById('account-login-panel');
-    const dashboardPanel = document.getElementById('account-dashboard-panel');
+    const loginSection = document.getElementById('account-login-section');
+    const profileSection = document.getElementById('account-profile-section');
     
     if (loggedInUser) {
-        loginPanel.style.display = 'none';
-        dashboardPanel.style.display = 'block';
-        
-        document.getElementById('account-user-name').textContent = loggedInUser.name;
-        document.getElementById('account-user-email').textContent = loggedInUser.email;
+        loginSection.style.display = 'none';
+        profileSection.style.display = 'block';
+        document.getElementById('welcome-message').textContent = `Welcome back, ${loggedInUser.name}!`;
+        renderOrderHistory();
         updateAccountWishlistCount();
-        showOrderHistory(false); // Hide table by default on view
     } else {
-        loginPanel.style.display = 'block';
-        dashboardPanel.style.display = 'none';
+        loginSection.style.display = 'block';
+        profileSection.style.display = 'none';
     }
 }
 
-function updateAccountWishlistCount() {
-    document.getElementById('wishlist-count-account').textContent = wishlist.length;
-}
-
-function showOrderHistory(toggle = true) {
-    const historySection = document.getElementById('order-history-section');
-    const historyBody = document.getElementById('order-history-body');
-
-    if (toggle) {
-        historySection.style.display = historySection.style.display === 'none' ? 'block' : 'none';
-    } else if (historySection.style.display === 'none') {
-        // If we are just refreshing the view and it's hidden, don't proceed
+function renderOrderHistory() {
+    const historyContainer = document.getElementById('order-history-list');
+    const emptyMessage = document.getElementById('order-history-empty');
+    
+    if (orderHistory.length === 0) {
+        emptyMessage.style.display = 'block';
+        historyContainer.innerHTML = '';
+        document.getElementById('account-order-count').textContent = '0';
         return;
     }
 
-    const userOrders = orderHistory.filter(order => order.id > 0); // Mock all orders for simplicity
-    document.getElementById('total-orders').textContent = userOrders.length;
+    emptyMessage.style.display = 'none';
+    document.getElementById('account-order-count').textContent = orderHistory.length;
     
-    if (userOrders.length === 0) {
-        historyBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">No orders found.</td></tr>`;
-        return;
-    }
-    
-    historyBody.innerHTML = userOrders.map(order => `
-        <tr class="hover:bg-gray-50 dark-mode:hover:bg-gray-800">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">#${order.id.toString().padStart(4, '0')}</td>
+    historyContainer.innerHTML = orderHistory.map(order => `
+        <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">${order.id}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">${order.date}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">${formatPrice(order.total)}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-bold">${order.total}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.status === 'Processing' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}">
-                    ${order.status}
-                </span>
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">${order.status}</span>
             </td>
         </tr>
     `).join('');
+}
+
+function renderWishlistDisplay() {
+    const container = document.getElementById('wishlist-items-container');
+    const emptyMessage = document.getElementById('empty-wishlist-message');
+
+    if (wishlist.length === 0) {
+        container.innerHTML = '';
+        emptyMessage.style.display = 'block';
+        return;
+    }
+    
+    emptyMessage.style.display = 'none';
+    
+    container.innerHTML = wishlist.map(wishlistItem => {
+        const product = products.find(p => p.id === wishlistItem.id);
+        if (!product) return '';
+        
+        const imageEmoji = product.category === "Women" ? '👚' : product.category === "Men" ? '👔' : '💍';
+
+        return `
+            <div class="flex items-center gap-6 p-4 border border-gray-200 dark-mode:border-gray-700 bg-white dark-mode:bg-gray-700 shadow-sm">
+                <div class="w-16 h-16 flex items-center justify-center bg-gray-100 dark-mode:bg-gray-800 flex-shrink-0">
+                    <span class="text-3xl">${imageEmoji}</span>
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                    <h3 class="text-lg font-semibold truncate">${product.name}</h3>
+                    <p class="text-base font-bold mt-1">${formatPrice(product.price)}</p>
+                </div>
+
+                <div class="text-right flex-shrink-0 space-x-2">
+                    <button class="px-3 py-1 bg-black text-white text-sm rounded hover:bg-gray-800 transition" 
+                            onclick="moveToCart(${product.id})">Move to Cart</button>
+                    <button class="text-sm text-red-500 hover:underline" 
+                            onclick="removeFromWishlist(${product.id})">Remove</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updateAccountWishlistCount() {
+    document.getElementById('account-wishlist-count').textContent = wishlist.length;
 }
