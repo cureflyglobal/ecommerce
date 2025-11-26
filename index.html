@@ -56,6 +56,27 @@
         body.dark-mode .cart-item-image {
             background: #333;
         }
+        
+        /* === FIX: Hero Section Background and Text Style === */
+        .hero {
+            background-image: url('https://source.unsplash.com/random/1200x500/?luxury,fashion'); /* Mock background image */
+            background-size: cover;
+            background-position: center;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .hero-content {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.4); /* Dark overlay */
+            color: white;
+            z-index: 50; /* Ensure content is above background */
+        }
+        /* ================================================== */
+
 
         /* Page Transition Animations 
             ✔ Fix Applied: Changed .page to position: relative to fix footer overlap.
@@ -284,8 +305,7 @@
     
         <section id="page-home" class="page active max-w-7xl mx-auto px-4">
             <div class="hero mb-12 max-w-full">
-                <div class="text-center bg-black bg-opacity-30 p-8">
-                    <h1 class="text-6xl font-extrabold tracking-tight">The Art of Dressing</h1>
+                <div class="hero-content"> <h1 class="text-6xl font-extrabold tracking-tight">The Art of Dressing</h1>
                     <p class="text-xl mt-4 max-w-lg mx-auto">Discover timeless elegance and contemporary luxury in our latest collection.</p>
                     <button class="btn-primary mt-8" onclick="navigateTo('shop', null, true)">Shop The New Collection</button>
                 </div>
