@@ -7,8 +7,6 @@
     
     <meta name="description" content="Discover timeless elegance and contemporary luxury with LUXE's premium collection of fashion and accessories.">
     <meta name="keywords" content="luxury fashion, high-end clothing, designer accessories, e-commerce mockup">
-    <meta name="author" content="LUXE Mockup Co.">
-    <link rel="canonical" href="https://mockup.luxe.com/index.html">
     <meta property="og:title" content="LUXE | Premium E-Commerce Mockup">
     <meta property="og:description" content="Discover timeless elegance and contemporary luxury in our latest collection.">
     
@@ -50,16 +48,10 @@
             color: #f8f8f8;
             border-color: #333;
         }
-        body.dark-mode .product-image {
-            background: #333;
-        }
-        body.dark-mode .cart-item-image {
-            background: #333;
-        }
         
-        /* === Hero Section Background and Text Style === */
+        /* === Hero Section Background and Text Style (Original Look Restored) === */
         .hero {
-            background-image: url('https://source.unsplash.com/random/1200x500/?luxury,fashion'); /* Mock background image */
+            background-image: url('https://source.unsplash.com/random/1200x500/?luxury,fashion,model'); 
             background-size: cover;
             background-position: center;
             min-height: 400px;
@@ -71,7 +63,7 @@
         .hero-content {
             text-align: center;
             padding: 2rem;
-            background: rgba(0, 0, 0, 0.4); /* Dark overlay */
+            background: rgba(0, 0, 0, 0.4); 
             color: white;
             z-index: 50;
         }
@@ -88,7 +80,6 @@
             to { opacity: 1; transform: translateX(0); }
         }
         
-        /* FIX: Removed position: relative from .page to ensure proper stacking context */
         .page {
             width: 100%;
             display: none;
@@ -101,11 +92,9 @@
             display: block;
             z-index: 20; 
         }
-        /* LTR = user navigated forward (e.g., Home -> Shop) */
         .page.active.slide-in-ltr {
             animation: slideInFromRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
-        /* RTL = user navigated backward (e.g., Shop -> Home) */
         .page.active.slide-in-rtl {
             animation: slideInFromLeft 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
@@ -114,7 +103,7 @@
         .nav-header {
             position: sticky;
             top: 0;
-            z-index: 1000; /* High z-index to ensure it is always on top */
+            z-index: 1000; 
             background: #ffffff;
             color: #1a1a1a;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -145,13 +134,6 @@
             font-weight: 600;
             text-transform: uppercase;
         }
-        .btn-secondary:hover {
-            background: #f0f0f0;
-        }
-        .product-card {
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
         .product-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px rgba(0,0,0,0.08);
@@ -164,11 +146,8 @@
             background: #f0f0f0;
             overflow: hidden;
         }
-        /* Mobile optimization refinement for sidebar */
+        /* Mobile filter sidebar styles */
         @media (max-width: 1024px) {
-            .lg\:col-span-4 { /* Targets the main content wrapper */
-                padding: 1rem;
-            }
             #shop-filters-sidebar {
                 position: fixed;
                 top: 0;
@@ -190,17 +169,6 @@
                  background: #2a2a2a;
             }
         }
-        /* Mobile menu specific styles to ensure visibility */
-        #mobile-menu {
-             /* Ensures it starts hidden */
-             transform: translateX(-100%); 
-             visibility: hidden; 
-        }
-        #mobile-menu.active {
-            transform: translateX(0);
-            visibility: visible;
-        }
-
         /* Wishlist icon style */
         .wishlist-icon {
             color: gray;
@@ -209,18 +177,9 @@
         .wishlist-icon.active {
             color: #ff0000;
         }
-        /* Style for hidden size inputs */
-        .filter-group label input[type="checkbox"]:checked + span {
-            background-color: #1a1a1a;
-            color: #fff;
-            border-color: #1a1a1a;
-        }
-        .filter-group label.text-sm {
-            display: flex;
-            align-items: center;
-        }
-        .filter-group label.text-sm input[type="checkbox"] {
-            margin-right: 0.5rem;
+        .size-option.selected, .color-option.selected {
+             box-shadow: 0 0 0 2px #1a1a1a;
+             border-color: #1a1a1a;
         }
         
     </style>
@@ -233,11 +192,9 @@
             <h2 class="text-3xl font-bold mb-4">🚀 Project Documentation</h2>
             <p class="mb-4">This mockup is implemented using **HTML**, **Tailwind CSS**, and **Vanilla JavaScript** (with some mock data in JS for persistence).</p>
             <ul class="list-disc list-inside space-y-2 text-sm">
-                <li>**File Structure:** `index.html` (Store), `admin.html` (Dashboard), `script.js` (Logic).</li>
                 <li>**Persistence:** Cart, Products, and User Orders use `localStorage`.</li>
                 <li>**Admin Login (Mock):** Email: `admin@luxe.com`, Pass: `12345`.</li>
                 <li>**User Login (Mock):** Email: `user@test.com`, Pass: `password`.</li>
-                <li>**Navigation:** All page changes use `MapsTo(pageId)` for smooth transitions.</li>
             </ul>
             <button class="btn-primary mt-6" onclick="closeDocumentation()">Close</button>
         </div>
@@ -301,7 +258,7 @@
     
         <section id="page-home" class="page active max-w-7xl mx-auto px-4">
             <div class="hero mb-12 max-w-full">
-                <div class="hero-content">
+                <div class="hero-content"> 
                     <h1 class="text-6xl font-extrabold tracking-tight">The Art of Dressing</h1>
                     <p class="text-xl mt-4 max-w-lg mx-auto">Discover timeless elegance and contemporary luxury in our latest collection.</p>
                     <button class="btn-primary mt-8" onclick="navigateTo('shop', null, true)">Shop The New Collection</button>
@@ -321,21 +278,21 @@
             <div class="max-w-7xl mx-auto px-4 py-8">
                 <h2 class="text-4xl font-bold text-center mb-10">Featured Highlights</h2>
                 <div id="featured-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                                </div>
+                </div>
             </div>
             
             <div class="max-w-7xl mx-auto px-4 py-12 text-center">
                 <h2 class="text-4xl font-bold mb-6">Shop by Category</h2>
                 <div class="grid grid-cols-3 gap-8">
-                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateTo('shop', null, true); clearFilters(); currentFilters.category = ['Women']; applyFilters();">
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateToCategory('Women')">
                         <span class="text-5xl" aria-hidden="true">👗</span>
                         <h3 class="text-2xl font-semibold mt-3">Women</h3>
                     </div>
-                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateTo('shop', null, true); clearFilters(); currentFilters.category = ['Men']; applyFilters();">
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateToCategory('Men')">
                         <span class="text-5xl" aria-hidden="true">👔</span>
                         <h3 class="text-2xl font-semibold mt-3">Men</h3>
                     </div>
-                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateTo('shop', null, true); clearFilters(); currentFilters.category = ['Accessories']; applyFilters();">
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateToCategory('Accessories')">
                         <span class="text-5xl" aria-hidden="true">💍</span>
                         <h3 class="text-2xl font-semibold mt-3">Accessories</h3>
                     </div>
@@ -356,6 +313,7 @@
                     onkeyup="applySearchFilter()"
                 >
             </div>
+            
             <button class="lg:hidden btn-secondary w-full mb-4" onclick="toggleMobileFilters()">
                 Filter & Sort
             </button>
@@ -457,7 +415,7 @@
                     <div id="main-product-image" class="w-full h-96 bg-gray-100 dark-mode:bg-gray-800 flex items-center justify-center">
                         <span class="text-8xl">🖼️</span>
                     </div>
-                    <div class="flex space-x-2">
+                    <div id="thumbnail-container" class="flex space-x-2">
                          </div>
                 </div>
                 
@@ -474,19 +432,12 @@
                     <div class="mt-6">
                         <h3 class="font-semibold mb-2">Size</h3>
                         <div id="variant-size-options" class="flex space-x-3">
-                            <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" data-size="S">S</button>
-                            <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" data-size="M">M</button>
-                            <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" data-size="L">L</button>
-                            <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" data-size="XL">XL</button>
                         </div>
                     </div>
                     
                     <div class="mt-4">
                         <h3 class="font-semibold mb-2">Color</h3>
                         <div id="variant-color-options" class="flex space-x-3">
-                            <div class="color-option w-8 h-8 rounded-full border cursor-pointer bg-black ring-offset-2 hover:ring-2 dark-mode:bg-black" data-color="Black"></div>
-                            <div class="color-option w-8 h-8 rounded-full border cursor-pointer bg-white ring-offset-2 hover:ring-2 dark-mode:bg-white" data-color="White"></div>
-                            <div class="color-option w-8 h-8 rounded-full border cursor-pointer bg-blue-600 ring-offset-2 hover:ring-2 dark-mode:bg-blue-600" data-color="Blue"></div>
                         </div>
                     </div>
 
