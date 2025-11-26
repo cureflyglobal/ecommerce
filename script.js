@@ -1,6 +1,7 @@
 /* ==========================================================
     LUXE E-COMMERCE MOCKUP - SCRIPT.JS
     Handles all mock data, routing, cart, and product logic.
+    (UPDATED 2025-11-26: Fixed Cart Remove and Checkout Flow)
 ========================================================== */
 
 const PRODUCTS = [
@@ -124,6 +125,7 @@ function saveState() {
     localStorage.setItem('luxeCurrency', currentCurrency);
     localStorage.setItem('luxeFilters', JSON.stringify(currentFilters));
     localStorage.setItem('luxeSort', currentSort);
+    // Note: User state is handled in renderAccountPage/loginForm
 }
 
 // ==========================================================
@@ -162,7 +164,7 @@ function changeCurrency(newCurrency) {
     renderProductGrid(true); 
     renderCart();
     renderWishlist();
-    // Update the select box
+    
     document.getElementById('currency-select').value = newCurrency;
 }
 
@@ -206,16 +208,20 @@ function navigateTo(pageId, productId = null, isForward = true) {
             renderCart();
         } else if (pageId === 'wishlist') {
             renderWishlist();
+        } else if (pageId === 'checkout') {
+            // Reset checkout to step 1 when entering
+            currentCheckoutStep = 1;
+            renderCheckoutSteps(); 
+            updateCartSummary(null, 0); // Recalculate summary without shipping
         }
         
-        // Scroll to the top of the content area
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 10);
 }
 
 /** Utility for Home Page Category Click */
 function navigateToCategory(category) {
-    clearFilters(); // Clear existing filters first
+    clearFilters(); 
     currentFilters.category.push(category);
     navigateTo('shop', null, true);
 }
@@ -360,7 +366,6 @@ function renderFeaturedProducts() {
          `;
      }).join('');
 }
-
 
 /** Updates filters based on checkbox changes. */
 function applyFilters() {
@@ -553,7 +558,6 @@ function addToCart(productId, size, color, quantity) {
     updateCartCount();
     showToast(`${product.name} added to cart!`);
     
-    // If we are on the cart page, re-render it immediately
     if (currentPage === 'cart') {
         renderCart();
     }
@@ -567,7 +571,7 @@ function renderCart() {
     if (cart.length === 0) {
         container.innerHTML = '';
         emptyMessage.style.display = 'block';
-        updateCartSummary(0, 0); // Reset summary
+        updateCartSummary(0, 0); 
         return;
     }
 
@@ -605,9 +609,19 @@ function renderCart() {
         `;
     }).join('');
 
-    updateCartSummary(subtotal);
+    updateCartSummary(subtotal, currentShippingCost); // Pass current shipping cost
 }
 
+// FIX: Ensure this function is correct for removing the item by its unique ID
+function removeFromCart(itemId) {
+    cart = cart.filter(item => item.itemId !== itemId);
+    saveState();
+    updateCartCount();
+    renderCart(); 
+    showToast('Item removed from cart.');
+}
+
+// FIX: Ensure this function correctly updates the item quantity
 function updateCartItemQuantity(itemId, quantity) {
     const newQuantity = parseInt(quantity);
     if (newQuantity < 1 || isNaN(newQuantity)) {
@@ -620,16 +634,8 @@ function updateCartItemQuantity(itemId, quantity) {
         item.quantity = newQuantity;
         saveState();
         updateCartCount();
-        renderCart(); // Re-render to update totals
+        renderCart(); 
     }
-}
-
-function removeFromCart(itemId) {
-    cart = cart.filter(item => item.itemId !== itemId);
-    saveState();
-    updateCartCount();
-    renderCart();
-    showToast('Item removed from cart.');
 }
 
 function updateCartCount() {
@@ -641,10 +647,17 @@ const TAX_RATE = 0.05; // 5% mock tax
 let currentShippingCost = 0;
 let currentCouponDiscount = 0;
 
-function updateCartSummary(subtotal, shipping = 0) {
-    let finalSubtotal = subtotal || cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+/** Updates the cart summary block.
+ * @param {number|null} subtotal - The calculated subtotal (or null to recalculate from cart).
+ * @param {number|null} shipping - The shipping cost (or null to use current state).
+ */
+function updateCartSummary(subtotal = null, shipping = null) {
+    let finalSubtotal = subtotal !== null ? subtotal : cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     
-    currentShippingCost = shipping; // Use provided shipping cost or default to 0
+    // Update shipping cost only if explicitly passed, otherwise use current
+    if (shipping !== null) {
+        currentShippingCost = shipping;
+    }
     
     // Apply discount
     let discountedSubtotal = finalSubtotal - currentCouponDiscount;
@@ -659,7 +672,6 @@ function updateCartSummary(subtotal, shipping = 0) {
     document.getElementById('summary-tax').textContent = formatPrice(tax);
     document.getElementById('summary-total').textContent = formatPrice(total);
     
-    // Update final checkout total
     if (document.getElementById('final-total')) {
         document.getElementById('final-total').textContent = formatPrice(total);
     }
@@ -675,7 +687,7 @@ function applyCoupon() {
         showToast('Invalid coupon code.', 'error');
     }
     document.getElementById('coupon-input').value = '';
-    renderCart(); // Re-render to show discount in summary
+    renderCart(); 
 }
 
 
@@ -701,7 +713,6 @@ function toggleWishlist(productId) {
     saveState();
     updateWishlistIcon(productId);
     
-    // If on the wishlist page, re-render
     if (currentPage === 'wishlist') {
         renderWishlist();
     }
@@ -709,13 +720,11 @@ function toggleWishlist(productId) {
 
 /** Updates the wishlist icon in the header and on the product detail page. */
 function updateWishlistIcon(productId = null) {
-    // Header icon
     const headerIcon = document.getElementById('wishlist-icon');
     if (headerIcon) {
         headerIcon.textContent = wishlist.length > 0 ? '❤️' : '🤍';
     }
     
-    // Detail page icon
     if (productId) {
         const detailIcon = document.getElementById('product-wishlist-icon');
         if (detailIcon) {
@@ -751,7 +760,7 @@ function renderWishlist() {
                     <p class="font-bold text-xl mt-2">${price}</p>
                 </div>
                 <div class="p-4 flex justify-between items-center border-t dark-mode:border-gray-700">
-                    <button class="btn-primary text-sm px-3 py-1.5" onclick="addToCart('${product.id}', '${product.sizes[0]}', '${product.colors[0]}', 1); removeFromWishlist('${product.id}')">
+                    <button class="btn-primary text-sm px-3 py-1.5" onclick="addToCart('${product.id}', '${product.sizes[0]}', '${product.colors[0]}', 1); toggleWishlist('${product.id}')">
                         Move to Cart
                     </button>
                     <button 
@@ -773,36 +782,57 @@ function renderWishlist() {
 
 let currentCheckoutStep = 1;
 
+/** Updates the display of the checkout panels and step icons. */
+function renderCheckoutSteps() {
+     // Hide all steps first
+     document.getElementById('checkout-step-1').classList.add('hidden');
+     document.getElementById('checkout-step-2').classList.add('hidden');
+     document.getElementById('checkout-step-3').classList.add('hidden');
+     
+     // Reset all step icons to grey
+     for (let i = 1; i <= 3; i++) {
+         const icon = document.getElementById(`step-icon-${i}`);
+         icon.classList.remove('bg-black', 'text-white');
+         icon.classList.add('bg-gray-300', 'text-gray-700', 'dark-mode:bg-gray-600', 'dark-mode:text-gray-300');
+     }
+     
+     // Show the current step
+     const currentStepPanel = document.getElementById(`checkout-step-${currentCheckoutStep}`);
+     if (currentStepPanel) currentStepPanel.classList.remove('hidden');
+     
+     // Highlight the active step and all previous steps
+     for (let i = 1; i <= currentCheckoutStep; i++) {
+         const icon = document.getElementById(`step-icon-${i}`);
+         icon.classList.add('bg-black', 'text-white');
+         icon.classList.remove('bg-gray-300', 'text-gray-700', 'dark-mode:bg-gray-600', 'dark-mode:text-gray-300');
+     }
+}
+
+// FIX: Corrected function to handle validation and step logic
 function nextCheckoutStep() {
     if (currentCheckoutStep === 1) {
-        // Mock validation for Step 1
         const form = document.getElementById('shipping-form');
         if (!form.reportValidity()) return;
-        
-        // Mock shipping cost update for summary
-        updateCartSummary(null, 10.00); 
     }
     
+    if (currentCheckoutStep === 2) {
+        // Mock: set the shipping cost based on selection
+        const selectedShipping = document.querySelector('input[name="shipping-method"]:checked');
+        const shippingCost = selectedShipping.value === 'express' ? 25.00 : 10.00;
+        updateCartSummary(null, shippingCost); 
+    }
+
     if (currentCheckoutStep < 3) {
-        document.getElementById(`checkout-step-${currentCheckoutStep}`).classList.add('hidden');
-        document.getElementById(`step-icon-${currentCheckoutStep}`).classList.remove('bg-black', 'text-white').classList.add('bg-gray-300', 'text-gray-700', 'dark-mode:bg-gray-600', 'dark-mode:text-gray-300');
-        
         currentCheckoutStep++;
-        
-        document.getElementById(`checkout-step-${currentCheckoutStep}`).classList.remove('hidden');
-        document.getElementById(`step-icon-${currentCheckoutStep}`).classList.add('bg-black', 'text-white').classList.remove('bg-gray-300', 'text-gray-700', 'dark-mode:bg-gray-600', 'dark-mode:text-gray-300');
+        renderCheckoutSteps();
     }
 }
 
+// FIX: Corrected function to go back a step and reset shipping when needed
 function prevCheckoutStep() {
     if (currentCheckoutStep > 1) {
-        document.getElementById(`checkout-step-${currentCheckoutStep}`).classList.add('hidden');
-        document.getElementById(`step-icon-${currentCheckoutStep}`).classList.remove('bg-black', 'text-white').classList.add('bg-gray-300', 'text-gray-700', 'dark-mode:bg-gray-600', 'dark-mode:text-gray-300');
-
         currentCheckoutStep--;
-        
-        document.getElementById(`checkout-step-${currentCheckoutStep}`).classList.remove('hidden');
-        document.getElementById(`step-icon-${currentCheckoutStep}`).classList.add('bg-black', 'text-white').classList.remove('bg-gray-300', 'text-gray-700', 'dark-mode:bg-gray-600', 'dark-mode:text-gray-300');
+        renderCheckoutSteps();
         
         // If returning to step 1, revert shipping summary
         if (currentCheckoutStep === 1) {
@@ -810,6 +840,7 @@ function prevCheckoutStep() {
         }
     }
 }
+
 
 function placeOrder() {
     // Mock validation for Step 3
@@ -821,7 +852,6 @@ function placeOrder() {
         return;
     }
     
-    // Mock order creation and storage
     const totalElement = document.getElementById('final-total');
     const finalTotal = totalElement ? totalElement.textContent : formatPrice(0);
     const order = {
@@ -839,13 +869,13 @@ function placeOrder() {
     // Clear cart and state
     cart = [];
     currentCheckoutStep = 1;
+    currentShippingCost = 0; // Reset
+    currentCouponDiscount = 0; // Reset
     saveState();
     updateCartCount();
 
-    // Show confirmation
     showToast(`Order #${order.id} placed successfully!`, 'success');
     
-    // Re-initialize steps and navigate home
     setTimeout(() => {
         navigateTo('home', null, true);
     }, 1500); 
@@ -895,10 +925,8 @@ function renderAccountPage() {
         
         document.getElementById('user-display-name').textContent = currentUser.name;
         
-        // Show Admin link if user is admin
         document.getElementById('admin-link').classList.toggle('hidden', currentUser.role !== 'admin');
         
-        // Render order history
         let orders = JSON.parse(localStorage.getItem('luxeOrders')) || [];
         const orderContainer = document.getElementById('order-history-container');
         
@@ -929,7 +957,6 @@ function toggleDarkMode() {
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
 }
 
-/** Displays a temporary toast notification. */
 function showToast(message, type = 'info') {
     const toast = document.getElementById('toast-notification');
     toast.textContent = message;
@@ -972,31 +999,24 @@ function closeDocumentation() {
 
 /** Runs on page load to set up the initial state. */
 function initialize() {
-    // 1. Dark Mode check
     if (localStorage.getItem('darkMode') === 'true') {
         document.body.classList.add('dark-mode');
     }
     
-    // 2. Set initial currency
     changeCurrency(currentCurrency);
 
-    // 3. Update header UI elements
     updateCartCount();
     updateWishlistIcon();
     
-    // 4. Set up event listeners
     document.getElementById('mobile-menu-button').onclick = () => document.getElementById('mobile-menu').classList.toggle('active');
     document.getElementById('mobile-menu-close').onclick = () => document.getElementById('mobile-menu').classList.remove('active');
     
-    // 5. Navigate to the initial page (usually home)
+    // Navigate to the initial page
     navigateTo(currentPage, null, true);
     
-    // 6. Set initial sort/filter state
     document.getElementById('sort-select').value = currentSort;
     
-    // Re-apply filters for the shop page if the user navigated away
     if (currentPage === 'shop') {
-        // This ensures the checkboxes reflect the state in localStorage
         Object.keys(currentFilters).forEach(filterType => {
             currentFilters[filterType].forEach(value => {
                 const checkbox = document.querySelector(`input[data-filter="${filterType}"][value="${value}"]`);
@@ -1006,10 +1026,7 @@ function initialize() {
         renderProductGrid();
     }
     
-    // 7. Initial rendering for home page components
     renderFeaturedProducts();
-    
-    // 8. Account page setup
     renderAccountPage();
 }
 
