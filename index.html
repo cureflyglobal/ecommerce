@@ -304,7 +304,7 @@
             <div class="max-w-7xl mx-auto px-4 py-8">
                 <h2 class="text-4xl font-bold text-center mb-10">Featured Highlights</h2>
                 <div id="featured-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        </div>
+                                </div>
             </div>
             
             <div class="max-w-7xl mx-auto px-4 py-12 text-center">
@@ -330,6 +330,15 @@
         <section id="page-shop" class="page max-w-7xl mx-auto px-4">
             <h1 class="text-4xl font-bold mb-8">Shop All Products</h1>
             
+            <div class="search-bar mb-6">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    placeholder="Search products by name or description..." 
+                    class="w-full p-3 border border-gray-300 rounded-lg text-lg dark-mode:bg-gray-800 dark-mode:border-gray-600"
+                    onkeyup="applySearchFilter()"
+                >
+            </div>
             <button class="lg:hidden btn-secondary w-full mb-4" onclick="toggleMobileFilters()">
                 Filter & Sort
             </button>
@@ -344,18 +353,7 @@
                         <option value="price-high">Price: High to Low</option>
                         <option value="rating">Average Rating</option>
                     </select>
-                <div class="mb-6 max-w-lg mx-auto md:mx-0">
-    <label for="product-search-input" class="sr-only">Search Products</label>
-    <div class="relative">
-        <input type="text" 
-               id="product-search-input" 
-               placeholder="Search by name or category..." 
-               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black dark-mode:bg-gray-700 dark-mode:border-gray-600"
-               oninput="applySearchFilter()"
-               aria-label="Search products on the shop page">
-        <span class="absolute right-3 top-3 text-gray-400">🔍</span>
-    </div>
-</div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
@@ -418,7 +416,7 @@
 
                 <div class="lg:col-span-3">
                     <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                        </div>
+                                </div>
 
                     <div class="flex justify-center items-center space-x-4 mt-12 mb-16">
                         <button class="btn-secondary px-4 py-2" onclick="changePage(-1)" aria-label="Previous Page">← Previous</button>
@@ -443,7 +441,7 @@
                         <span class="text-8xl">🖼️</span>
                     </div>
                     <div class="flex space-x-2">
-                        </div>
+                         </div>
                 </div>
                 
                 <div>
@@ -452,8 +450,8 @@
                     <p class="mt-4 text-gray-600 dark-mode:text-gray-400" id="product-sku">SKU: LUX-TS-001</p>
                     
                     <div class="mt-6 border-t pt-4">
-                            <h3 class="font-semibold mb-2">Description</h3>
-                            <p id="product-description" class="text-gray-700 dark-mode:text-gray-300">Loading product description...</p>
+                                 <h3 class="font-semibold mb-2">Description</h3>
+                                 <p id="product-description" class="text-gray-700 dark-mode:text-gray-300">Loading product description...</p>
                     </div>
                     
                     <div class="mt-6">
@@ -509,7 +507,7 @@
              <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                  <div class="lg:col-span-2 space-y-4">
                     <div id="cart-items-container" class="space-y-4">
-                         </div>
+                               </div>
                     <div id="empty-cart-message" class="text-center py-12 border border-dashed mt-4 p-8 bg-gray-50 dark-mode:bg-gray-800" style="display: none;">
                         <span class="text-6xl mb-4 block">🛒</span>
                         <h2 class="text-2xl font-semibold mb-2">Your Cart is Empty</h2>
@@ -567,105 +565,69 @@
                     </div>
                     <div class="flex items-center space-x-4">
                         <span id="step-icon-3" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 dark-mode:bg-gray-600 text-gray-700 dark-mode:text-gray-300 font-bold">3</span>
-                        <span class="text-gray-500 dark-mode:text-gray-400">Payment & Review</span>
+                        <span class="text-gray-500 dark-mode:text-gray-400">Payment</span>
                     </div>
                 </div>
-
-                <div class="lg:col-span-2 checkout-panel p-6 bg-white dark-mode:bg-gray-700 shadow-md">
-                    
-                    <h2 class="text-2xl font-bold mb-6">Step 1: Shipping Details</h2>
-                    
-                    <div id="checkout-step-1" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="shipping-first-name" placeholder="First Name" class="p-3 border rounded dark-mode:bg-gray-800" value="John">
-                            <input type="text" id="shipping-last-name" placeholder="Last Name" class="p-3 border rounded dark-mode:bg-gray-800" value="Doe">
-                        </div>
-                        <input type="email" id="shipping-email" placeholder="Email Address" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="john.doe@example.com">
-                        <input type="text" id="shipping-address-1" placeholder="Address Line 1" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="123 Luxury Lane">
-                        <input type="text" id="shipping-address-2" placeholder="Address Line 2 (Apt, Suite, etc.)" class="w-full p-3 border rounded dark-mode:bg-gray-800">
-                        <div class="grid grid-cols-3 gap-4">
-                            <input type="text" id="shipping-city" placeholder="City" class="p-3 border rounded dark-mode:bg-gray-800" value="New York">
-                            <input type="text" id="shipping-state" placeholder="State/Province" class="p-3 border rounded dark-mode:bg-gray-800" value="NY">
-                            <input type="text" id="shipping-zip" placeholder="ZIP/Postal Code" class="p-3 border rounded dark-mode:bg-gray-800" value="10001">
-                        </div>
-                        <select id="shipping-country" class="w-full p-3 border rounded dark-mode:bg-gray-800">
-                            <option value="US">United States</option>
-                            <option value="CA">Canada</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="AU">Australia</option>
-                            <option value="FR">France</option>
-                        </select>
-                        <div class="pt-4 flex justify-end">
-                            <button class="btn-primary" onclick="setCheckoutStep(2)">Continue to Shipping →</button>
-                        </div>
-                    </div>
-
-                    <div id="checkout-step-2" class="space-y-4" style="display: none;">
-                        <h3 class="font-semibold mb-4 border-b pb-2">Select Shipping Speed</h3>
-                        <div class="space-y-3">
-                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
-                                <input type="radio" name="shipping-method" value="standard" checked class="mr-3">
-                                <div class="flex justify-between flex-1">
-                                    <span>Standard (5-7 days)</span>
-                                    <span class="font-semibold">$10.00</span>
-                                </div>
-                            </label>
-                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
-                                <input type="radio" name="shipping-method" value="express" class="mr-3">
-                                <div class="flex justify-between flex-1">
-                                    <span>Express (1-2 days)</span>
-                                    <span class="font-semibold">$35.00</span>
-                                </div>
-                            </label>
-                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
-                                <input type="radio" name="shipping-method" value="free" class="mr-3">
-                                <div class="flex justify-between flex-1">
-                                    <span>Free Shipping (Orders over $150)</span>
-                                    <span class="font-semibold">FREE</span>
-                                </div>
-                            </label>
-                        </div>
-                        <div class="pt-4 flex justify-between">
-                            <button class="btn-secondary" onclick="setCheckoutStep(1)">← Back to Details</button>
-                            <button class="btn-primary" onclick="setCheckoutStep(3)">Continue to Payment →</button>
-                        </div>
-                    </div>
-
-                    <div id="checkout-step-3" class="space-y-4" style="display: none;">
-                        <h3 class="font-semibold mb-4 border-b pb-2">Payment Information</h3>
-                        
-                        <div class="space-y-3">
-                            <h4 class="font-medium">Payment Method:</h4>
-                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
-                                <input type="radio" name="payment-method" value="card" checked class="mr-3">
-                                <span>Credit/Debit Card</span>
-                            </label>
-                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
-                                <input type="radio" name="payment-method" value="paypal" class="mr-3">
-                                <span>PayPal</span>
-                            </label>
-                        </div>
-
-                        <div id="card-details-form" class="space-y-4 pt-2">
-                            <input type="text" placeholder="Card Number" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="4111 **** **** 1111">
-                            <input type="text" placeholder="Cardholder Name" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="John D. Doe">
+                
+                <div class="lg:col-span-2 space-y-8">
+                    <div id="checkout-step-1" class="checkout-panel p-6 bg-white dark-mode:bg-gray-700 shadow-md">
+                        <h2 class="text-2xl font-bold mb-4">Shipping Details</h2>
+                        <form id="shipping-form" class="space-y-4">
+                            <input type="email" placeholder="Email Address" required class="w-full p-3 border rounded dark-mode:bg-gray-800">
                             <div class="grid grid-cols-2 gap-4">
-                                <input type="text" placeholder="MM / YY" class="p-3 border rounded dark-mode:bg-gray-800" value="12/28">
-                                <input type="text" placeholder="CVV" class="p-3 border rounded dark-mode:bg-gray-800" value="123">
+                                <input type="text" placeholder="First Name" required class="p-3 border rounded dark-mode:bg-gray-800">
+                                <input type="text" placeholder="Last Name" required class="p-3 border rounded dark-mode:bg-gray-800">
                             </div>
-                        </div>
-
-                        <h3 class="font-semibold mb-4 border-t pt-4">Order Review</h3>
-                        <div class="p-4 bg-gray-50 dark-mode:bg-gray-800 rounded">
-                            <div class="flex justify-between font-medium">
-                                <span>Total (Incl. Shipping & Tax)</span>
-                                <span id="checkout-total" class="text-xl font-bold">$0.00</span>
+                            <input type="text" placeholder="Address Line 1" required class="w-full p-3 border rounded dark-mode:bg-gray-800">
+                            <input type="text" placeholder="Address Line 2 (Optional)" class="w-full p-3 border rounded dark-mode:bg-gray-800">
+                            <div class="grid grid-cols-3 gap-4">
+                                <input type="text" placeholder="City" required class="p-3 border rounded dark-mode:bg-gray-800">
+                                <input type="text" placeholder="Zip/Postal Code" required class="p-3 border rounded dark-mode:bg-gray-800">
+                                <select required class="p-3 border rounded dark-mode:bg-gray-800">
+                                    <option value="">Country</option>
+                                    <option>United States</option>
+                                    <option>Canada</option>
+                                    <option>United Kingdom</option>
+                                </select>
                             </div>
-                        </div>
+                            <button type="button" class="btn-primary w-full" onclick="nextCheckoutStep()">Continue to Shipping</button>
+                        </form>
+                    </div>
 
-                        <div class="pt-4 flex justify-between">
-                            <button class="btn-secondary" onclick="setCheckoutStep(2)">← Back to Shipping</button>
-                            <button class="btn-primary" onclick="placeOrder()">Place Order</button>
+                    <div id="checkout-step-2" class="checkout-panel p-6 bg-white dark-mode:bg-gray-700 shadow-md hidden">
+                        <h2 class="text-2xl font-bold mb-4">Shipping Method</h2>
+                        <div class="space-y-3">
+                            <label class="flex items-center p-3 border rounded cursor-pointer dark-mode:border-gray-600">
+                                <input type="radio" name="shipping-method" value="standard" checked class="mr-3">
+                                <span class="flex-1">Standard Shipping (5-7 days)</span>
+                                <span class="font-semibold">$10.00</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded cursor-pointer dark-mode:border-gray-600">
+                                <input type="radio" name="shipping-method" value="express" class="mr-3">
+                                <span class="flex-1">Express Shipping (1-2 days)</span>
+                                <span class="font-semibold">$25.00</span>
+                            </label>
+                        </div>
+                        <div class="flex justify-between mt-6">
+                            <button type="button" class="btn-secondary" onclick="prevCheckoutStep()">← Return to Details</button>
+                            <button type="button" class="btn-primary" onclick="nextCheckoutStep()">Continue to Payment</button>
+                        </div>
+                    </div>
+
+                    <div id="checkout-step-3" class="checkout-panel p-6 bg-white dark-mode:bg-gray-700 shadow-md hidden">
+                        <h2 class="text-2xl font-bold mb-4">Payment Information</h2>
+                        <form id="payment-form" class="space-y-4">
+                            <input type="text" placeholder="Card Number" required class="w-full p-3 border rounded dark-mode:bg-gray-800">
+                            <div class="grid grid-cols-3 gap-4">
+                                <input type="text" placeholder="MM/YY" required class="p-3 border rounded dark-mode:bg-gray-800">
+                                <input type="text" placeholder="CVC" required class="p-3 border rounded dark-mode:bg-gray-800">
+                                <input type="text" placeholder="Cardholder Name" required class="p-3 border rounded dark-mode:bg-gray-800">
+                            </div>
+                            <p class="text-sm text-gray-500 dark-mode:text-gray-400">By clicking 'Place Order', you agree to LUXE's Terms of Service.</p>
+                        </form>
+                        <div class="flex justify-between mt-6">
+                            <button type="button" class="btn-secondary" onclick="prevCheckoutStep()">← Return to Shipping</button>
+                            <button type="button" class="btn-primary" onclick="placeOrder()">Place Order (<span id="final-total">$0.00</span>)</button>
                         </div>
                     </div>
                 </div>
@@ -673,159 +635,99 @@
         </section>
 
         <section id="page-wishlist" class="page max-w-7xl mx-auto px-4">
-            <h1 class="text-4xl font-bold mb-8">My Wishlist</h1>
-            <div id="wishlist-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                </div>
-            <div id="empty-wishlist-message" class="text-center py-12 border border-dashed mt-4 p-8 bg-gray-50 dark-mode:bg-gray-800" style="display: none;">
-                <span class="text-6xl mb-4 block">💖</span>
-                <h2 class="text-2xl font-semibold mb-2">Your Wishlist is Empty</h2>
-                <p class="text-gray-600 dark-mode:text-gray-400">Save your favorites for later!</p>
-                <button class="btn-primary mt-6" onclick="navigateTo('shop', null, true)">Start Browsing</button>
+             <h1 class="text-4xl font-bold mb-8">Your Wishlist</h1>
+             <div id="wishlist-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                 <p class="text-gray-600 dark-mode:text-gray-400 lg:col-span-4" id="empty-wishlist-message">Your wishlist is empty. Start adding items from the shop!</p>
+             </div>
+        </section>
+
+        <section id="page-about" class="page max-w-7xl mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-8">About LUXE</h1>
+            <div class="max-w-3xl space-y-6 text-lg">
+                <p>Welcome to **LUXE**, where we curate the finest expressions of modern elegance and timeless design. Our mission is to provide an effortless shopping experience backed by unparalleled quality and customer service.</p>
+                <p>Founded on the principle that luxury should be accessible and sustainable, every piece in our collection is carefully selected for its craftsmanship and lasting appeal. We partner only with ethical manufacturers who share our commitment to excellence.</p>
+                <p class="font-semibold">Thank you for choosing LUXE.</p>
+            </div>
+            <div class="mt-12 border-t pt-6">
+                <h2 class="text-3xl font-bold mb-4">Our Values</h2>
+                <ul class="list-disc list-inside space-y-2 text-md">
+                    <li>**Quality:** Obsession with the finest materials and construction.</li>
+                    <li>**Integrity:** Transparent and ethical sourcing practices.</li>
+                    <li>**Sustainability:** Committed to reducing our environmental footprint.</li>
+                </ul>
             </div>
         </section>
 
         <section id="page-account" class="page max-w-7xl mx-auto px-4">
             <h1 class="text-4xl font-bold mb-8">My Account</h1>
-            
-            <div id="account-status" class="mb-8">
-                 <h2 id="welcome-message" class="text-2xl font-semibold">Welcome, Guest!</h2>
-                 <p class="text-gray-600 dark-mode:text-gray-400">Manage your orders, profile, and preferences here.</p>
+            <div id="account-login" class="max-w-md mx-auto p-8 bg-white dark-mode:bg-gray-700 shadow-lg">
+                <h2 class="text-2xl font-bold mb-4">Login or Register</h2>
+                <form id="login-form" class="space-y-4">
+                    <input type="email" id="login-email" placeholder="Email Address (e.g., user@test.com)" required class="w-full p-3 border rounded dark-mode:bg-gray-800">
+                    <input type="password" id="login-password" placeholder="Password (e.g., password)" required class="w-full p-3 border rounded dark-mode:bg-gray-800">
+                    <button type="submit" class="btn-primary w-full">Sign In</button>
+                </form>
+                <button class="text-sm text-gray-500 mt-3 underline hover:text-gray-900 dark-mode:text-gray-400 dark-mode:hover:text-white" onclick="alert('Mockup feature: Password reset not implemented.')">Forgot Password?</button>
+                <div class="mt-6 pt-4 border-t dark-mode:border-gray-600">
+                    <p class="text-sm text-center">New customer? <a href="#" class="underline font-semibold" onclick="alert('Mockup feature: Registration not implemented.')">Create an Account</a></p>
+                    <p class="text-xs text-center mt-2 text-gray-500">Admin Login: admin@luxe.com / 12345</p>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div class="lg:col-span-1 space-y-4">
-                    <button class="w-full text-left p-4 border rounded hover:bg-gray-100 dark-mode:hover:bg-gray-700 transition font-medium" onclick="toggleAccountView('profile')">Profile Details</button>
-                    <button class="w-full text-left p-4 border rounded hover:bg-gray-100 dark-mode:hover:bg-gray-700 transition font-medium" onclick="toggleAccountView('orders')">Order History</button>
-                    <button class="w-full text-left p-4 border rounded hover:bg-gray-100 dark-mode:hover:bg-gray-700 transition font-medium" onclick="toggleAccountView('addresses')">Saved Addresses</button>
-                    <button id="logout-button" class="w-full text-left p-4 border rounded hover:bg-red-50 dark-mode:hover:bg-red-900 transition font-medium text-red-600 dark-mode:text-red-400" onclick="logout()">Logout</button>
-                    <button id="login-button" class="w-full text-left p-4 btn-primary transition font-medium" onclick="toggleAccountView('login')">Login / Register</button>
-                </div>
-                <div class="lg:col-span-2 account-panel p-6 bg-white dark-mode:bg-gray-700 shadow-md">
-                    
-                    <div id="account-view-profile">
-                        <h3 class="text-2xl font-bold mb-4">Profile Details</h3>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="text" placeholder="First Name" class="p-3 border rounded dark-mode:bg-gray-800" value="John">
-                                <input type="text" placeholder="Last Name" class="p-3 border rounded dark-mode:bg-gray-800" value="Doe">
-                            </div>
-                            <input type="email" placeholder="Email Address" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="john.doe@example.com">
-                            <input type="password" placeholder="Change Password" class="w-full p-3 border rounded dark-mode:bg-gray-800">
-                            <button class="btn-primary">Save Profile</button>
+            <div id="account-dashboard" class="max-w-3xl mx-auto p-8 bg-white dark-mode:bg-gray-700 shadow-lg hidden">
+                <h2 class="text-2xl font-bold mb-4">Welcome Back, <span id="user-display-name">User</span>!</h2>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-xl mb-2">Order History</h3>
+                        <div id="order-history-container" class="space-y-3">
+                             <p class="text-gray-600 dark-mode:text-gray-400">No orders placed yet.</p>
                         </div>
                     </div>
-
-                    <div id="account-view-orders" style="display: none;">
-                        <h3 class="text-2xl font-bold mb-4">Order History</h3>
-                        <div id="order-history-container" class="space-y-4">
-                            </div>
-                        <p id="no-orders-message" class="text-gray-600 dark-mode:text-gray-400">You have no past orders.</p>
-                    </div>
-
-                    <div id="account-view-addresses" style="display: none;">
-                        <h3 class="text-2xl font-bold mb-4">Saved Addresses</h3>
-                        <div id="addresses-container" class="space-y-4">
-                            </div>
-                        <button class="btn-secondary mt-4" onclick="addNewAddress()">+ Add New Address</button>
-                    </div>
-
-                    <div id="account-view-login">
-                         <h3 class="text-2xl font-bold mb-4">Login or Register</h3>
-                         <div class="space-y-4">
-                             <input type="email" id="login-email" placeholder="Email Address" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="user@test.com">
-                             <input type="password" id="login-password" placeholder="Password" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="password">
-                             <button class="btn-primary w-full" onclick="mockLogin()">Login</button>
-                             <p class="text-center text-sm text-gray-600 dark-mode:text-gray-400">Don't have an account? <a href="#" onclick="showNotification('Registration not implemented in mockup')" class="underline">Register here</a></p>
-                         </div>
-                         <div class="mt-8 pt-4 border-t border-gray-200 dark-mode:border-gray-700">
-                             <h4 class="text-lg font-semibold mb-2">Mock Credentials:</h4>
-                             <p class="text-sm">User: <code>user@test.com</code> / <code>password</code></p>
-                             <p class="text-sm">Admin: <code>admin@luxe.com</code> / <code>12345</code> (Accesses admin.html)</p>
-                         </div>
-                    </div>
-
+                    
+                    <button class="btn-primary" onclick="logoutUser()">Sign Out</button>
+                    <a href="admin.html" id="admin-link" class="btn-secondary ml-4 hidden">Admin Dashboard</a>
                 </div>
             </div>
         </section>
-
-        <section id="page-about" class="page max-w-7xl mx-auto px-4">
-            <h1 class="text-4xl font-bold mb-8">About LUXE</h1>
-            <div class="max-w-4xl mx-auto space-y-6">
-                <p class="text-lg">LUXE is a fictional e-commerce platform dedicated to showcasing the art of modern luxury and timeless design. This site serves as a frontend development mockup, built purely with HTML, Tailwind CSS, and Vanilla JavaScript to demonstrate robust single-page application (SPA) behaviors, fluid transitions, and component reusability.</p>
-
-                <h2 class="text-3xl font-semibold pt-4">Our Philosophy</h2>
-                <p>We believe that luxury should be accessible and defined by quality, not just price. Every product in our collection—though simulated—is designed to represent sophistication, meticulous craftsmanship, and enduring style. We aim to inspire confidence and elegance in every piece.</p>
-
-                <h2 class="text-3xl font-semibold pt-4">Technology Stack</h2>
-                <ul class="list-disc list-inside space-y-2">
-                    <li>**HTML5:** Semantic structure.</li>
-                    <li>**Tailwind CSS:** Utility-first styling for rapid, responsive design.</li>
-                    <li>**Vanilla JavaScript:** Core logic, state management (using `localStorage`), and component rendering.</li>
-                    <li>**SPA Simulation:** Page transitions are handled via dynamic class toggling and CSS animations, mimicking a true single-page application experience.</li>
-                </ul>
-
-                <p class="pt-4 text-center">Thank you for exploring the LUXE mockup.</p>
-            </div>
-        </section>
-
-
-        <section id="page-order-confirmation" class="page text-center max-w-2xl mx-auto px-4">
-             <span class="text-9xl mb-6 block">✨</span>
-             <h1 class="text-5xl font-extrabold mb-4">Order Placed Successfully!</h1>
-             <p class="text-xl text-gray-700 dark-mode:text-gray-300 mb-6">Your order (<span id="confirmation-order-id">#LUXE-000</span>) has been confirmed and is being processed.</p>
-             <div class="p-6 bg-gray-100 dark-mode:bg-gray-800 rounded-lg shadow-inner space-y-3">
-                <p class="font-semibold">Order Total: <span id="confirmation-total" class="text-2xl">$0.00</span></p>
-                <p class="text-sm text-gray-600 dark-mode:text-gray-400">A confirmation email has been sent to your address.</p>
-             </div>
-             <div class="flex justify-center space-x-4 mt-8">
-                 <button class="btn-secondary" onclick="navigateTo('home', null, false)">Back to Home</button>
-                 <button class="btn-primary" onclick="navigateTo('account', null, true)">View My Orders</button>
-             </div>
-        </section>
-
-
+        
     </main>
 
-    <footer class="bg-black text-white py-12 mt-16">
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer class="bg-black text-white py-10 mt-20" role="contentinfo">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
             <div>
-                <h3 class="text-xl font-bold mb-4 uppercase">LUXE</h3>
-                <p class="text-sm text-gray-400">Timeless elegance meets modern design.</p>
-                <div class="flex space-x-4 mt-4">
-                    <a href="#" class="hover:text-gray-300" aria-label="Instagram">📸</a>
-                    <a href="#" class="hover:text-gray-300" aria-label="Twitter">🐦</a>
-                    <a href="#" class="hover:text-gray-300" aria-label="Facebook">📘</a>
-                </div>
+                <h3 class="text-xl font-bold mb-4">LUXE</h3>
+                <p class="text-sm text-gray-400">Timeless elegance, redefined.</p>
+                <p class="text-xs mt-4 text-gray-500">© 2025 LUXE Mockup Co.</p>
             </div>
             <div>
-                <h4 class="font-semibold mb-3">Shop</h4>
+                <h3 class="font-semibold mb-4">Shop</h3>
                 <ul class="space-y-2 text-sm text-gray-400">
-                    <li><a href="#" onclick="navigateTo('shop', null, true)" class="hover:text-white">New Arrivals</a></li>
-                    <li><a href="#" onclick="filterByCategory('Women')" class="hover:text-white">Women's Collection</a></li>
-                    <li><a href="#" onclick="filterByCategory('Men')" class="hover:text-white">Men's Collection</a></li>
-                    <li><a href="#" onclick="filterByCategory('Accessories')" class="hover:text-white">Accessories</a></li>
+                    <li><a href="#" onclick="navigateTo('shop')" class="hover:text-white">New Arrivals</a></li>
+                    <li><a href="#" onclick="navigateTo('shop')" class="hover:text-white">Men's Collection</a></li>
+                    <li><a href="#" onclick="navigateTo('shop')" class="hover:text-white">Women's Collection</a></li>
+                    <li><a href="#" onclick="navigateTo('shop')" class="hover:text-white">Sale</a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="font-semibold mb-3">Service</h4>
+                <h3 class="font-semibold mb-4">Customer Service</h3>
                 <ul class="space-y-2 text-sm text-gray-400">
-                    <li><a href="#" onclick="navigateTo('account', null, true)" class="hover:text-white">My Account</a></li>
-                    <li><a href="#" onclick="navigateTo('cart', null, true)" class="hover:text-white">Shipping & Returns</a></li>
-                    <li><a href="#" onclick="navigateTo('cart', null, true)" class="hover:text-white">FAQ</a></li>
-                    <li><a href="#" onclick="openDocumentation()" class="hover:text-white">Documentation</a></li>
+                    <li><a href="#" class="hover:text-white" onclick="alert('Mockup feature: Contact form not implemented.')">Contact Us</a></li>
+                    <li><a href="#" class="hover:text-white" onclick="alert('Mockup feature: FAQ not implemented.')">FAQ</a></li>
+                    <li><a href="#" class="hover:text-white" onclick="alert('Mockup feature: Returns policy not implemented.')">Returns</a></li>
+                    <li><button class="hover:text-white text-sm" onclick="openDocumentation()">Documentation</button></li>
                 </ul>
             </div>
             <div>
-                <h4 class="font-semibold mb-3">Newsletter</h4>
-                <p class="text-sm text-gray-400 mb-3">Subscribe for exclusive offers.</p>
-                <div class="flex">
-                    <input type="email" placeholder="Email address" class="p-2 flex-1 bg-gray-800 border border-gray-700 text-white text-sm">
-                    <button class="bg-white text-black p-2 text-sm font-semibold hover:bg-gray-200">Go</button>
+                <h3 class="font-semibold mb-4">Connect</h3>
+                <div class="flex space-x-4 text-2xl">
+                    <a href="#" aria-label="Instagram">📸</a>
+                    <a href="#" aria-label="Facebook">📘</a>
+                    <a href="#" aria-label="Twitter">🐦</a>
+                </div>
+                <div class="mt-4">
+                    <button class="btn-secondary text-sm px-4 py-2 border-white text-white dark-mode:bg-gray-800" onclick="toggleDarkMode()">Toggle Dark/Light</button>
                 </div>
             </div>
-        </div>
-        <div class="max-w-7xl mx-auto px-4 text-center mt-10 border-t border-gray-800 pt-6">
-            <p class="text-xs text-gray-500">&copy; 2025 LUXE Mockup Co. All rights reserved. | Developed for demonstration purposes.</p>
         </div>
     </footer>
 
