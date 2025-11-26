@@ -1088,5 +1088,101 @@ function filterByCategory(category) {
     navigateTo('shop', null, true);
 }
 
+// ==========================================================
+// SHOP PAGE SEARCH FUNCTION
+// ==========================================================
+
+function searchProducts() {
+    const term = document.getElementById('shop-search-input').value.toLowerCase().trim();
+
+    // Always start with all products before filtering
+    let filteredProducts = products.filter(p =>
+        p.name.toLowerCase().includes(term) ||
+        p.category.toLowerCase().includes(term) ||
+        p.description.toLowerCase().includes(term)
+    );
+
+    // Maintain existing filters
+    if (currentFilters.category.length > 0) {
+        filteredProducts = filteredProducts.filter(p => currentFilters.category.includes(p.category));
+    }
+
+    if (currentFilters.price.length > 0) {
+        filteredProducts = filteredProducts.filter(p => {
+            return currentFilters.price.some(range => {
+                const [min, max] = range.split('-').map(Number);
+                return p.price >= min && p.price <= max;
+            });
+        });
+    }
+
+    if (currentFilters.size.length > 0) {
+        filteredProducts = filteredProducts.filter(p =>
+            p.availableSizes.some(size => currentFilters.size.includes(size))
+        );
+    }
+
+    if (currentFilters.color.length > 0) {
+        filteredProducts = filteredProducts.filter(p =>
+            p.availableColors.some(color => currentFilters.color.includes(color))
+        );
+    }
+
+    if (currentFilters.rating.length > 0) {
+        filteredProducts = filteredProducts.filter(p =>
+            currentFilters.rating.some(rating => p.rating >= parseFloat(rating))
+        );
+    }
+
+    // Override pagination so search results show instantly
+    currentPageNumber = 1;
+
+    // Render results
+    renderSearchedProducts(filteredProducts);
+}
+
+function renderSearchedProducts(list) {
+    const container = document.getElementById('products-grid');
+    const countEl = document.getElementById('product-count');
+
+    if (!container || !countEl) return;
+
+    countEl.textContent = list.length;
+
+    if (list.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full text-center py-12 text-gray-500 dark-mode:text-gray-400">
+                No matching products found.
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = list.map(product => {
+        const isWishlisted = wishlist.some(item => item.productId === product.id);
+        const priceDisplay = product.oldPrice
+            ? `<span class="text-sm line-through text-gray-400">${formatPrice(product.oldPrice)}</span> 
+               <span class="text-red-600 font-bold">${formatPrice(product.price)}</span>`
+            : formatPrice(product.price);
+
+        return `
+            <div class="product-card bg-white dark-mode:bg-gray-700 p-4 shadow-sm"
+                 onclick="navigateTo('product', '${product.id}', true)">
+                <div class="product-image">
+                    <span class="text-6xl" aria-label="Product Image Mock">📦</span>
+                </div>
+                <div class="mt-3">
+                    <h3 class="text-lg font-semibold truncate">${product.name}</h3>
+                    <p class="text-gray-500 dark-mode:text-gray-300 text-sm">${product.category}</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <p class="text-xl font-medium">${priceDisplay}</p>
+                        <button class="text-lg" onclick="event.stopPropagation(); toggleWishlist('${product.id}');">
+                            <span class="wishlist-icon ${isWishlisted ? 'active' : ''}">🤍</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
 // End of file. The mobile menu fix is contained within the toggleMobileMenu function and the DOMContentLoaded listener.
