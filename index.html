@@ -344,7 +344,18 @@
                         <option value="price-high">Price: High to Low</option>
                         <option value="rating">Average Rating</option>
                     </select>
-                </div>
+                <div class="mb-6 max-w-lg mx-auto md:mx-0">
+    <label for="product-search-input" class="sr-only">Search Products</label>
+    <div class="relative">
+        <input type="text" 
+               id="product-search-input" 
+               placeholder="Search by name or category..." 
+               class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-black dark-mode:bg-gray-700 dark-mode:border-gray-600"
+               oninput="applySearchFilter()"
+               aria-label="Search products on the shop page">
+        <span class="absolute right-3 top-3 text-gray-400">🔍</span>
+    </div>
+</div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
