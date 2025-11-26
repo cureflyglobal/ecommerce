@@ -567,12 +567,12 @@
                         <h2 class="text-2xl font-bold mb-4">Shipping Method</h2>
                         <div class="space-y-3">
                             <label class="flex items-center p-3 border rounded cursor-pointer dark-mode:border-gray-600">
-                                <input type="radio" name="shipping-method" value="standard" checked class="mr-3">
+                                <input type="radio" name="shipping-method" value="standard" checked class="mr-3" onchange="updateCartSummary(null, 10.00)">
                                 <span class="flex-1">Standard Shipping (5-7 days)</span>
                                 <span class="font-semibold">$10.00</span>
                             </label>
                             <label class="flex items-center p-3 border rounded cursor-pointer dark-mode:border-gray-600">
-                                <input type="radio" name="shipping-method" value="express" class="mr-3">
+                                <input type="radio" name="shipping-method" value="express" class="mr-3" onchange="updateCartSummary(null, 25.00)">
                                 <span class="flex-1">Express Shipping (1-2 days)</span>
                                 <span class="font-semibold">$25.00</span>
                             </label>
@@ -638,7 +638,7 @@
                 </form>
                 <button class="text-sm text-gray-500 mt-3 underline hover:text-gray-900 dark-mode:text-gray-400 dark-mode:hover:text-white" onclick="alert('Mockup feature: Password reset not implemented.')">Forgot Password?</button>
                 <div class="mt-6 pt-4 border-t dark-mode:border-gray-600">
-                    <p class="text-sm text-center">New customer? <a href="#" class="underline font-semibold" onclick="alert('Mockup feature: Registration not implemented.')">Create an Account</a></p>
+                    <p class="text-sm text-center">New customer? <a href="#" class="underline font-semibold" onclick="showToast('Registration is a mock feature. Use user@test.com/password or admin@luxe.com/12345 to log in.', 'info')">Create an Account</a></p>
                     <p class="text-xs text-center mt-2 text-gray-500">Admin Login: admin@luxe.com / 12345</p>
                 </div>
             </div>
