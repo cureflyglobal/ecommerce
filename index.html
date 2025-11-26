@@ -57,7 +57,7 @@
             background: #333;
         }
         
-        /* === FIX: Hero Section Background and Text Style === */
+        /* === Hero Section Background and Text Style === */
         .hero {
             background-image: url('https://source.unsplash.com/random/1200x500/?luxury,fashion'); /* Mock background image */
             background-size: cover;
@@ -73,14 +73,12 @@
             padding: 2rem;
             background: rgba(0, 0, 0, 0.4); /* Dark overlay */
             color: white;
-            z-index: 50; /* Ensure content is above background */
+            z-index: 50;
         }
         /* ================================================== */
 
 
-        /* Page Transition Animations 
-            ✔ Fix Applied: Changed .page to position: relative to fix footer overlap.
-        */
+        /* Page Transition Animations */
         @keyframes slideInFromRight {
             from { opacity: 0.5; transform: translateX(100%); }
             to { opacity: 1; transform: translateX(0); }
@@ -90,10 +88,8 @@
             to { opacity: 1; transform: translateX(0); }
         }
         
-        /* FIX: Changed position from absolute to relative to respect document flow and push the footer down. */
+        /* FIX: Removed position: relative from .page to ensure proper stacking context */
         .page {
-            position: relative; 
-            left: 0;
             width: 100%;
             display: none;
             min-height: calc(100vh - 80px);
@@ -118,7 +114,7 @@
         .nav-header {
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 1000; /* High z-index to ensure it is always on top */
             background: #ffffff;
             color: #1a1a1a;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
@@ -228,7 +224,7 @@
         }
         
     </style>
-    <script src="script.js" type="text/javascript" defer></script>
+    <script src="script.js" type="text/javascript" defer onerror="console.error('Failed to load script.js')"></script>
 </head>
 <body>
 
@@ -305,7 +301,8 @@
     
         <section id="page-home" class="page active max-w-7xl mx-auto px-4">
             <div class="hero mb-12 max-w-full">
-                <div class="hero-content"> <h1 class="text-6xl font-extrabold tracking-tight">The Art of Dressing</h1>
+                <div class="hero-content">
+                    <h1 class="text-6xl font-extrabold tracking-tight">The Art of Dressing</h1>
                     <p class="text-xl mt-4 max-w-lg mx-auto">Discover timeless elegance and contemporary luxury in our latest collection.</p>
                     <button class="btn-primary mt-8" onclick="navigateTo('shop', null, true)">Shop The New Collection</button>
                 </div>
@@ -330,15 +327,15 @@
             <div class="max-w-7xl mx-auto px-4 py-12 text-center">
                 <h2 class="text-4xl font-bold mb-6">Shop by Category</h2>
                 <div class="grid grid-cols-3 gap-8">
-                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="filterByCategory('Women')">
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateTo('shop', null, true); clearFilters(); currentFilters.category = ['Women']; applyFilters();">
                         <span class="text-5xl" aria-hidden="true">👗</span>
                         <h3 class="text-2xl font-semibold mt-3">Women</h3>
                     </div>
-                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="filterByCategory('Men')">
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateTo('shop', null, true); clearFilters(); currentFilters.category = ['Men']; applyFilters();">
                         <span class="text-5xl" aria-hidden="true">👔</span>
                         <h3 class="text-2xl font-semibold mt-3">Men</h3>
                     </div>
-                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="filterByCategory('Accessories')">
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="navigateTo('shop', null, true); clearFilters(); currentFilters.category = ['Accessories']; applyFilters();">
                         <span class="text-5xl" aria-hidden="true">💍</span>
                         <h3 class="text-2xl font-semibold mt-3">Accessories</h3>
                     </div>
@@ -507,6 +504,7 @@
                             id="detail-wishlist-toggle" 
                             class="btn-secondary px-6 py-3 border border-gray-300 dark-mode:border-gray-600 dark-mode:bg-gray-700 dark-mode:text-white"
                             aria-label="Toggle Wishlist"
+                            onclick="toggleWishlist(this.getAttribute('data-product-id'))"
                         >
                             <span id="product-wishlist-icon" class="text-xl">🤍</span> 
                         </button>
