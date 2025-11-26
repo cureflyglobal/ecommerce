@@ -1,0 +1,822 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUXE | Premium E-Commerce Mockup</title>
+    
+    <meta name="description" content="Discover timeless elegance and contemporary luxury with LUXE's premium collection of fashion and accessories.">
+    <meta name="keywords" content="luxury fashion, high-end clothing, designer accessories, e-commerce mockup">
+    <meta name="author" content="LUXE Mockup Co.">
+    <link rel="canonical" href="https://mockup.luxe.com/index.html">
+    <meta property="og:title" content="LUXE | Premium E-Commerce Mockup">
+    <meta property="og:description" content="Discover timeless elegance and contemporary luxury in our latest collection.">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* ==========================================================
+            LUXE CSS STYLES - Includes Mobile Optimization & RTL/LTR Transitions
+            ========================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            background: #f8f8f8;
+            color: #1a1a1a;
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        /* Dark Mode styles */
+        body.dark-mode {
+            background: #1a1a1a;
+            color: #f8f8f8;
+        }
+        body.dark-mode .nav-header {
+            background: #0d0d0d;
+            border-bottom-color: #333;
+        }
+        body.dark-mode .page-section,
+        body.dark-mode .product-card,
+        body.dark-mode .cart-summary,
+        body.dark-mode .checkout-panel,
+        body.dark-mode .account-panel,
+        body.dark-mode .modal-content,
+        body.dark-mode .search-bar input {
+            background: #2a2a2a;
+            color: #f8f8f8;
+            border-color: #333;
+        }
+        body.dark-mode .product-image {
+            background: #333;
+        }
+        body.dark-mode .cart-item-image {
+            background: #333;
+        }
+
+        /* Page Transition Animations 
+            ✔ Fix Applied: Changed .page to position: relative to fix footer overlap.
+        */
+        @keyframes slideInFromRight {
+            from { opacity: 0.5; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideInFromLeft {
+            from { opacity: 0.5; transform: translateX(-100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        /* FIX: Changed position from absolute to relative to respect document flow and push the footer down. */
+        .page {
+            position: relative; 
+            left: 0;
+            width: 100%;
+            display: none;
+            min-height: calc(100vh - 80px);
+            padding-top: 2rem;
+            z-index: 10; 
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s;
+        }
+        .page.active {
+            display: block;
+            z-index: 20; 
+        }
+        /* LTR = user navigated forward (e.g., Home -> Shop) */
+        .page.active.slide-in-ltr {
+            animation: slideInFromRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        /* RTL = user navigated backward (e.g., Shop -> Home) */
+        .page.active.slide-in-rtl {
+            animation: slideInFromLeft 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        /* Utility Components */
+        .nav-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: #ffffff;
+            color: #1a1a1a;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .btn-primary:hover {
+            background: #333333;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #ffffff;
+            color: #1a1a1a;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .btn-secondary:hover {
+            background: #f0f0f0;
+        }
+        .product-card {
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.08);
+        }
+        .product-image {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+        /* Mobile optimization refinement for sidebar */
+        @media (max-width: 1024px) {
+            .lg\:col-span-4 { /* Targets the main content wrapper */
+                padding: 1rem;
+            }
+            #shop-filters-sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 80%;
+                height: 100%;
+                background: white;
+                z-index: 3000;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-out;
+                padding: 2rem 1rem;
+                overflow-y: auto;
+                box-shadow: 4px 0 10px rgba(0,0,0,0.2);
+            }
+            #shop-filters-sidebar.active {
+                transform: translateX(0);
+            }
+            .dark-mode #shop-filters-sidebar {
+                 background: #2a2a2a;
+            }
+        }
+        /* Mobile menu specific styles to ensure visibility */
+        #mobile-menu {
+             /* Ensures it starts hidden */
+             transform: translateX(-100%); 
+             visibility: hidden; 
+        }
+        #mobile-menu.active {
+            transform: translateX(0);
+            visibility: visible;
+        }
+
+        /* Wishlist icon style */
+        .wishlist-icon {
+            color: gray;
+            transition: color 0.3s;
+        }
+        .wishlist-icon.active {
+            color: #ff0000;
+        }
+        /* Style for hidden size inputs */
+        .filter-group label input[type="checkbox"]:checked + span {
+            background-color: #1a1a1a;
+            color: #fff;
+            border-color: #1a1a1a;
+        }
+        .filter-group label.text-sm {
+            display: flex;
+            align-items: center;
+        }
+        .filter-group label.text-sm input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        
+    </style>
+    <script src="script.js" type="text/javascript" defer></script>
+</head>
+<body>
+
+    <div id="docs-modal" class="modal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-content fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark-mode:bg-gray-800 p-8 shadow-2xl z-50 max-w-lg w-full">
+            <h2 class="text-3xl font-bold mb-4">🚀 Project Documentation</h2>
+            <p class="mb-4">This mockup is implemented using **HTML**, **Tailwind CSS**, and **Vanilla JavaScript** (with some mock data in JS for persistence).</p>
+            <ul class="list-disc list-inside space-y-2 text-sm">
+                <li>**File Structure:** `index.html` (Store), `admin.html` (Dashboard), `script.js` (Logic).</li>
+                <li>**Persistence:** Cart, Products, and User Orders use `localStorage`.</li>
+                <li>**Admin Login (Mock):** Email: `admin@luxe.com`, Pass: `12345`.</li>
+                <li>**User Login (Mock):** Email: `user@test.com`, Pass: `password`.</li>
+                <li>**Navigation:** All page changes use `MapsTo(pageId)` for smooth transitions.</li>
+            </ul>
+            <button class="btn-primary mt-6" onclick="closeDocumentation()">Close</button>
+        </div>
+    </div>
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40" style="display: none;" onclick="closeDocumentation()"></div>
+
+
+    <div id="toast-notification" role="alert" aria-live="assertive"></div>
+
+    <div id="mobile-menu" class="lg:hidden fixed inset-0 bg-white dark-mode:bg-gray-900 z-50 transform transition-transform duration-300">
+        <button id="mobile-menu-close" class="absolute top-4 right-4 text-3xl text-gray-900 dark-mode:text-white" aria-label="Close Menu">✕</button>
+        <nav class="flex flex-col space-y-4 text-2xl font-semibold mt-12 p-8">
+            <a href="#" onclick="navigateTo('home', null, true); toggleMobileMenu();" class="text-gray-900 dark-mode:text-white hover:text-gray-600">Home</a>
+            <a href="#" onclick="navigateTo('shop', null, true); toggleMobileMenu();" class="text-gray-900 dark-mode:text-white hover:text-gray-600">Shop</a>
+            <a href="#" onclick="navigateTo('about', null, true); toggleMobileMenu();" class="text-gray-900 dark-mode:text-white hover:text-gray-600">About</a>
+            <a href="#" onclick="navigateTo('account', null, true); toggleMobileMenu();" class="text-gray-900 dark-mode:text-white hover:text-gray-600">Account</a>
+        </nav>
+        <div class="mt-8 pt-6 border-t border-gray-300 dark-mode:border-gray-700 space-y-3 p-8">
+             <button class="w-full text-left p-2 hover:bg-gray-100 dark-mode:hover:bg-gray-800" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+             <a href="admin.html" class="block w-full text-left p-2 hover:bg-gray-100 dark-mode:hover:bg-gray-800">Admin Login</a>
+             <button class="w-full text-left p-2 hover:bg-gray-100 dark-mode:hover:bg-gray-800" onclick="openDocumentation()">View Documentation</button>
+        </div>
+    </div>
+    
+    <header class="nav-header" role="navigation">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            
+            <a href="#" onclick="navigateTo('home')" class="text-3xl font-bold tracking-widest uppercase">LUXE</a>
+
+            <nav class="hidden lg:flex space-x-8 font-semibold">
+                <a href="#" onclick="navigateTo('home', null, true)" class="hover:text-gray-500">Home</a>
+                <a href="#" onclick="navigateTo('shop', null, true)" class="hover:text-gray-500">Shop</a>
+                <a href="#" onclick="navigateTo('about', null, true)" class="hover:text-gray-500">About</a>
+                <a href="#" onclick="navigateTo('account', null, true)" class="hover:text-gray-500">Account</a>
+            </nav>
+
+            <div class="flex items-center space-x-6">
+                <button class="hover:text-gray-500 text-xl" onclick="navigateTo('wishlist', null, true)" aria-label="Wishlist">
+                    <span id="wishlist-icon" class="wishlist-icon">🤍</span>
+                </button>
+                
+                <div class="relative">
+                    <button class="hover:text-gray-500 text-xl" onclick="navigateTo('cart', null, true)" aria-label="Shopping Cart">🛒</button>
+                    <span id="cart-count" class="absolute -top-3 -right-3 bg-red-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">0</span>
+                </div>
+
+                <select id="currency-select" onchange="changeCurrency(this.value)" class="p-1 border rounded text-sm bg-transparent dark-mode:border-gray-500" aria-label="Select Currency">
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="GBP">GBP</option>
+                </select>
+                
+                <button class="hidden lg:block hover:text-gray-500 text-xl" onclick="toggleDarkMode()" aria-label="Toggle Dark Mode">🌙</button>
+
+                <button id="mobile-menu-button" class="lg:hidden text-2xl hover:text-gray-500" aria-label="Open Menu">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="min-h-screen relative max-w-full"> 
+    
+        <section id="page-home" class="page active max-w-7xl mx-auto px-4">
+            <div class="hero mb-12 max-w-full">
+                <div class="text-center bg-black bg-opacity-30 p-8">
+                    <h1 class="text-6xl font-extrabold tracking-tight">The Art of Dressing</h1>
+                    <p class="text-xl mt-4 max-w-lg mx-auto">Discover timeless elegance and contemporary luxury in our latest collection.</p>
+                    <button class="btn-primary mt-8" onclick="navigateTo('shop', null, true)">Shop The New Collection</button>
+                </div>
+            </div>
+
+            <div class="promo-banner text-center py-6 mb-12 max-w-full">
+                <h2 id="promo-heading" class="text-3xl font-bold mb-3">Seasonal Sale: Up to 40% Off!</h2>
+                <div class="countdown flex justify-center items-center text-4xl">
+                    <div class="mx-4"><span id="countdown-days">00</span><p class="text-sm uppercase">Days</p></div>
+                    <div class="mx-4"><span id="countdown-hours">00</span><p class="text-sm uppercase">Hours</p></div>
+                    <div class="mx-4"><span id="countdown-minutes">00</span><p class="text-sm uppercase">Minutes</p></div>
+                    <div class="mx-4"><span id="countdown-seconds">00</span><p class="text-sm uppercase">Seconds</p></div>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <h2 class="text-4xl font-bold text-center mb-10">Featured Highlights</h2>
+                <div id="featured-products" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        </div>
+            </div>
+            
+            <div class="max-w-7xl mx-auto px-4 py-12 text-center">
+                <h2 class="text-4xl font-bold mb-6">Shop by Category</h2>
+                <div class="grid grid-cols-3 gap-8">
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="filterByCategory('Women')">
+                        <span class="text-5xl" aria-hidden="true">👗</span>
+                        <h3 class="text-2xl font-semibold mt-3">Women</h3>
+                    </div>
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="filterByCategory('Men')">
+                        <span class="text-5xl" aria-hidden="true">👔</span>
+                        <h3 class="text-2xl font-semibold mt-3">Men</h3>
+                    </div>
+                    <div class="p-8 border hover:shadow-lg transition bg-white dark-mode:bg-2a2a2a cursor-pointer" onclick="filterByCategory('Accessories')">
+                        <span class="text-5xl" aria-hidden="true">💍</span>
+                        <h3 class="text-2xl font-semibold mt-3">Accessories</h3>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+
+        <section id="page-shop" class="page max-w-7xl mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-8">Shop All Products</h1>
+            
+            <button class="lg:hidden btn-secondary w-full mb-4" onclick="toggleMobileFilters()">
+                Filter & Sort
+            </button>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 py-4 border-b border-t border-gray-200 dark-mode:border-gray-700">
+                <div class="text-gray-600 dark-mode:text-gray-400 mb-4 md:mb-0"><span id="product-count">0</span> Products</div>
+                <div class="flex items-center space-x-4">
+                    <label for="sort-select" class="text-sm font-medium">Sort By:</label>
+                    <select id="sort-select" onchange="sortProducts()" class="p-2 border rounded bg-transparent dark-mode:border-gray-600">
+                        <option value="newest">Newest</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Average Rating</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+                
+                <aside id="shop-filters-sidebar" class="col-span-1 lg:block border-r border-gray-100 dark-mode:border-gray-800 pr-6">
+                    <button class="lg:hidden absolute top-4 right-4 text-3xl text-gray-900 dark-mode:text-white" onclick="toggleMobileFilters()">✕</button>
+
+                    <div class="flex justify-between items-center mb-6 pt-4 lg:pt-0">
+                         <h3 class="text-2xl font-semibold">Filters</h3>
+                         <button class="text-sm text-gray-500 hover:text-gray-900 underline" onclick="clearFilters()">Clear All</button>
+                    </div>
+                    
+                    <div class="filter-group space-y-4 mb-6">
+                        <h4 class="font-bold border-b pb-2 mb-2">Category</h4>
+                        <label class="block text-sm"><input type="checkbox" data-filter="category" value="Women" onchange="applyFilters()" class="mr-2"> Women</label>
+                        <label class="block text-sm"><input type="checkbox" data-filter="category" value="Men" onchange="applyFilters()" class="mr-2"> Men</label>
+                        <label class="block text-sm"><input type="checkbox" data-filter="category" value="Accessories" onchange="applyFilters()" class="mr-2"> Accessories</label>
+                    </div>
+                    
+                    <div class="filter-group space-y-4 mb-6">
+                        <h4 class="font-bold border-b pb-2 mb-2">Price Range (USD)</h4>
+                        <label class="block text-sm"><input type="checkbox" data-filter="price" value="0-100" onchange="applyFilters()" class="mr-2"> Under $100</label>
+                        <label class="block text-sm"><input type="checkbox" data-filter="price" value="100-300" onchange="applyFilters()" class="mr-2"> $100 - $300</label>
+                        <label class="block text-sm"><input type="checkbox" data-filter="price" value="300-10000" onchange="applyFilters()" class="mr-2"> Over $300</label>
+                    </div>
+
+                    <div class="filter-group space-y-4 mb-6">
+                        <h4 class="font-bold border-b pb-2 mb-2">Size</h4>
+                        <div class="flex flex-wrap gap-2">
+                             <label class="text-sm border p-1 px-2 cursor-pointer transition"><input type="checkbox" data-filter="size" value="S" onchange="applyFilters()" class="mr-1 hidden"> <span>S</span></label>
+                             <label class="text-sm border p-1 px-2 cursor-pointer transition"><input type="checkbox" data-filter="size" value="M" onchange="applyFilters()" class="mr-1 hidden"> <span>M</span></label>
+                             <label class="text-sm border p-1 px-2 cursor-pointer transition"><input type="checkbox" data-filter="size" value="L" onchange="applyFilters()" class="mr-1 hidden"> <span>L</span></label>
+                             <label class="text-sm border p-1 px-2 cursor-pointer transition"><input type="checkbox" data-filter="size" value="XL" onchange="applyFilters()" class="mr-1 hidden"> <span>XL</span></label>
+                             <label class="text-sm border p-1 px-2 cursor-pointer transition"><input type="checkbox" data-filter="size" value="OS" onchange="applyFilters()" class="mr-1 hidden"> <span>One Size</span></label>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group space-y-4 mb-6">
+                        <h4 class="font-bold border-b pb-2 mb-2">Color</h4>
+                        <div class="flex flex-wrap gap-2">
+                             <label class="w-8 h-8 rounded-full border cursor-pointer bg-black transition" aria-label="Color Black"><input type="checkbox" data-filter="color" value="Black" onchange="applyFilters()" class="hidden"></label>
+                             <label class="w-8 h-8 rounded-full border cursor-pointer bg-blue-600 transition" aria-label="Color Blue"><input type="checkbox" data-filter="color" value="Blue" onchange="applyFilters()" class="hidden"></label>
+                             <label class="w-8 h-8 rounded-full border cursor-pointer bg-red-600 transition" aria-label="Color Red"><input type="checkbox" data-filter="color" value="Red" onchange="applyFilters()" class="hidden"></label>
+                             <label class="w-8 h-8 rounded-full border cursor-pointer bg-gray-400 transition" aria-label="Color Gray"><input type="checkbox" data-filter="color" value="Gray" onchange="applyFilters()" class="hidden"></label>
+                             <label class="w-8 h-8 rounded-full border cursor-pointer bg-white transition" aria-label="Color White"><input type="checkbox" data-filter="color" value="White" onchange="applyFilters()" class="hidden"></label>
+                        </div>
+                    </div>
+
+
+                    <div class="filter-group space-y-4 mb-6">
+                        <h4 class="font-bold border-b pb-2 mb-2">Rating</h4>
+                        <label class="block text-sm"><input type="checkbox" data-filter="rating" value="5" onchange="applyFilters()" class="mr-2"> 5 Stars Only</label>
+                        <label class="block text-sm"><input type="checkbox" data-filter="rating" value="4" onchange="applyFilters()" class="mr-2"> 4 Stars & Up</label>
+                    </div>
+                    
+                    <div class="lg:hidden mt-6">
+                        <button class="btn-primary w-full" onclick="toggleMobileFilters()">Show Results</button>
+                    </div>
+                </aside>
+
+                <div class="lg:col-span-3">
+                    <div id="products-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                        </div>
+
+                    <div class="flex justify-center items-center space-x-4 mt-12 mb-16">
+                        <button class="btn-secondary px-4 py-2" onclick="changePage(-1)" aria-label="Previous Page">← Previous</button>
+                        <span id="pagination-info" class="text-sm font-medium">Page 1 of 1</span>
+                        <button class="btn-secondary px-4 py-2" onclick="changePage(1)" aria-label="Next Page">Next →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-product" class="page max-w-7xl mx-auto px-4">
+            <nav class="text-sm mb-6">
+                <a href="#" onclick="navigateTo('shop', null, false)" class="text-gray-500 hover:text-gray-900">Shop</a>
+                <span class="mx-2">/</span>
+                <span id="product-breadcrumb" class="font-semibold">Product Name</span>
+            </nav>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                
+                <div class="space-y-4">
+                    <div id="main-product-image" class="w-full h-96 bg-gray-100 dark-mode:bg-gray-800 flex items-center justify-center">
+                        <span class="text-8xl">🖼️</span>
+                    </div>
+                    <div class="flex space-x-2">
+                        </div>
+                </div>
+                
+                <div>
+                    <h1 id="product-title" class="text-4xl font-bold">Product Name</h1>
+                    <p class="text-2xl font-semibold mt-2" id="product-price">$99.00</p>
+                    <p class="mt-4 text-gray-600 dark-mode:text-gray-400" id="product-sku">SKU: LUX-TS-001</p>
+                    
+                    <div class="mt-6 border-t pt-4">
+                            <h3 class="font-semibold mb-2">Description</h3>
+                            <p id="product-description" class="text-gray-700 dark-mode:text-gray-300">Loading product description...</p>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="font-semibold mb-2">Size</h3>
+                        <div id="variant-size-options" class="flex space-x-3">
+                            <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" data-size="S">S</button>
+                            <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" data-size="M">M</button>
+                            <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" data-size="L">L</button>
+                            <button class="size-option border px-4 py-2 hover:bg-gray-100 dark-mode:hover:bg-gray-600 transition" data-size="XL">XL</button>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h3 class="font-semibold mb-2">Color</h3>
+                        <div id="variant-color-options" class="flex space-x-3">
+                            <div class="color-option w-8 h-8 rounded-full border cursor-pointer bg-black ring-offset-2 hover:ring-2 dark-mode:bg-black" data-color="Black"></div>
+                            <div class="color-option w-8 h-8 rounded-full border cursor-pointer bg-white ring-offset-2 hover:ring-2 dark-mode:bg-white" data-color="White"></div>
+                            <div class="color-option w-8 h-8 rounded-full border cursor-pointer bg-blue-600 ring-offset-2 hover:ring-2 dark-mode:bg-blue-600" data-color="Blue"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-4 mt-8">
+                        <label for="quantity-input" class="font-semibold text-lg">Quantity:</label>
+                        <input type="number" id="quantity-input" value="1" min="1" max="10" class="w-20 p-2 border border-gray-300 rounded text-center dark-mode:bg-gray-800">
+                    </div>
+                    
+                    <div class="flex space-x-4 mt-8">
+                        <button id="detail-add-to-cart" class="btn-primary flex-1">
+                            Add to Cart 🛒
+                        </button>
+                        
+                        <button 
+                            id="detail-wishlist-toggle" 
+                            class="btn-secondary px-6 py-3 border border-gray-300 dark-mode:border-gray-600 dark-mode:bg-gray-700 dark-mode:text-white"
+                            aria-label="Toggle Wishlist"
+                        >
+                            <span id="product-wishlist-icon" class="text-xl">🤍</span> 
+                        </button>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-gray-200 dark-mode:border-gray-700">
+                        <h3 class="font-semibold mb-2">Customer Reviews</h3>
+                        <p class="text-sm">⭐️⭐️⭐️⭐️ (4.5/5 from 85 reviews) - <a href="#" class="underline hover:text-gray-500">Read all</a></p>
+                    </div>
+
+                </div>
+            </div>
+            
+        </section>
+        
+        <section id="page-cart" class="page max-w-7xl mx-auto px-4">
+             <h1 class="text-4xl font-bold mb-8">Shopping Cart</h1>
+             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                 <div class="lg:col-span-2 space-y-4">
+                    <div id="cart-items-container" class="space-y-4">
+                         </div>
+                    <div id="empty-cart-message" class="text-center py-12 border border-dashed mt-4 p-8 bg-gray-50 dark-mode:bg-gray-800" style="display: none;">
+                        <span class="text-6xl mb-4 block">🛒</span>
+                        <h2 class="text-2xl font-semibold mb-2">Your Cart is Empty</h2>
+                        <p class="text-gray-600 dark-mode:text-gray-400">Time to find something luxurious!</p>
+                        <button class="btn-primary mt-6" onclick="navigateTo('shop', null, true)">Go to Shop</button>
+                    </div>
+                 </div>
+                 
+                 <div class="lg:col-span-1 cart-summary p-6 bg-white dark-mode:bg-gray-700 shadow-md h-fit">
+                    <h2 class="text-2xl font-bold mb-4">Summary</h2>
+                    <div class="space-y-2 border-b pb-4">
+                        <div class="flex justify-between text-lg">
+                            <span>Subtotal (<span id="summary-items">0</span> items)</span>
+                            <span id="summary-subtotal">$0.00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600 dark-mode:text-gray-300">
+                            <span>Shipping</span>
+                            <span id="summary-shipping">Calculated at checkout</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600 dark-mode:text-gray-300">
+                            <span>Tax (Mock 5%)</span>
+                            <span id="summary-tax">$0.00</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-xl font-bold pt-4 mb-6">
+                        <span>Estimated Total</span>
+                        <span id="summary-total">$0.00</span>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h3 class="font-semibold mb-2">Apply Coupon</h3>
+                        <div class="flex space-x-2">
+                             <input type="text" id="coupon-input" placeholder="Enter code" class="p-2 border rounded flex-1 dark-mode:bg-gray-800">
+                             <button class="btn-secondary text-sm px-4" onclick="applyCoupon()">Apply</button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary w-full mt-6" onclick="navigateTo('checkout', null, true)">Proceed to Checkout</button>
+                 </div>
+             </div>
+        </section>
+
+        <section id="page-checkout" class="page max-w-7xl mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-8">Checkout</h1>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <div class="lg:col-span-1 space-y-4">
+                    <div class="flex items-center space-x-4">
+                        <span id="step-icon-1" class="w-8 h-8 flex items-center justify-center rounded-full bg-black text-white font-bold">1</span>
+                        <span class="font-semibold">Shipping Details</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="step-icon-2" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 dark-mode:bg-gray-600 text-gray-700 dark-mode:text-gray-300 font-bold">2</span>
+                        <span class="text-gray-500 dark-mode:text-gray-400">Shipping Method</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="step-icon-3" class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-300 dark-mode:bg-gray-600 text-gray-700 dark-mode:text-gray-300 font-bold">3</span>
+                        <span class="text-gray-500 dark-mode:text-gray-400">Payment & Review</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 checkout-panel p-6 bg-white dark-mode:bg-gray-700 shadow-md">
+                    
+                    <h2 class="text-2xl font-bold mb-6">Step 1: Shipping Details</h2>
+                    
+                    <div id="checkout-step-1" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" id="shipping-first-name" placeholder="First Name" class="p-3 border rounded dark-mode:bg-gray-800" value="John">
+                            <input type="text" id="shipping-last-name" placeholder="Last Name" class="p-3 border rounded dark-mode:bg-gray-800" value="Doe">
+                        </div>
+                        <input type="email" id="shipping-email" placeholder="Email Address" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="john.doe@example.com">
+                        <input type="text" id="shipping-address-1" placeholder="Address Line 1" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="123 Luxury Lane">
+                        <input type="text" id="shipping-address-2" placeholder="Address Line 2 (Apt, Suite, etc.)" class="w-full p-3 border rounded dark-mode:bg-gray-800">
+                        <div class="grid grid-cols-3 gap-4">
+                            <input type="text" id="shipping-city" placeholder="City" class="p-3 border rounded dark-mode:bg-gray-800" value="New York">
+                            <input type="text" id="shipping-state" placeholder="State/Province" class="p-3 border rounded dark-mode:bg-gray-800" value="NY">
+                            <input type="text" id="shipping-zip" placeholder="ZIP/Postal Code" class="p-3 border rounded dark-mode:bg-gray-800" value="10001">
+                        </div>
+                        <select id="shipping-country" class="w-full p-3 border rounded dark-mode:bg-gray-800">
+                            <option value="US">United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="AU">Australia</option>
+                            <option value="FR">France</option>
+                        </select>
+                        <div class="pt-4 flex justify-end">
+                            <button class="btn-primary" onclick="setCheckoutStep(2)">Continue to Shipping →</button>
+                        </div>
+                    </div>
+
+                    <div id="checkout-step-2" class="space-y-4" style="display: none;">
+                        <h3 class="font-semibold mb-4 border-b pb-2">Select Shipping Speed</h3>
+                        <div class="space-y-3">
+                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
+                                <input type="radio" name="shipping-method" value="standard" checked class="mr-3">
+                                <div class="flex justify-between flex-1">
+                                    <span>Standard (5-7 days)</span>
+                                    <span class="font-semibold">$10.00</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
+                                <input type="radio" name="shipping-method" value="express" class="mr-3">
+                                <div class="flex justify-between flex-1">
+                                    <span>Express (1-2 days)</span>
+                                    <span class="font-semibold">$35.00</span>
+                                </div>
+                            </label>
+                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
+                                <input type="radio" name="shipping-method" value="free" class="mr-3">
+                                <div class="flex justify-between flex-1">
+                                    <span>Free Shipping (Orders over $150)</span>
+                                    <span class="font-semibold">FREE</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="pt-4 flex justify-between">
+                            <button class="btn-secondary" onclick="setCheckoutStep(1)">← Back to Details</button>
+                            <button class="btn-primary" onclick="setCheckoutStep(3)">Continue to Payment →</button>
+                        </div>
+                    </div>
+
+                    <div id="checkout-step-3" class="space-y-4" style="display: none;">
+                        <h3 class="font-semibold mb-4 border-b pb-2">Payment Information</h3>
+                        
+                        <div class="space-y-3">
+                            <h4 class="font-medium">Payment Method:</h4>
+                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
+                                <input type="radio" name="payment-method" value="card" checked class="mr-3">
+                                <span>Credit/Debit Card</span>
+                            </label>
+                            <label class="flex items-center p-3 border rounded cursor-pointer hover:bg-gray-50 dark-mode:hover:bg-gray-800 transition">
+                                <input type="radio" name="payment-method" value="paypal" class="mr-3">
+                                <span>PayPal</span>
+                            </label>
+                        </div>
+
+                        <div id="card-details-form" class="space-y-4 pt-2">
+                            <input type="text" placeholder="Card Number" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="4111 **** **** 1111">
+                            <input type="text" placeholder="Cardholder Name" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="John D. Doe">
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" placeholder="MM / YY" class="p-3 border rounded dark-mode:bg-gray-800" value="12/28">
+                                <input type="text" placeholder="CVV" class="p-3 border rounded dark-mode:bg-gray-800" value="123">
+                            </div>
+                        </div>
+
+                        <h3 class="font-semibold mb-4 border-t pt-4">Order Review</h3>
+                        <div class="p-4 bg-gray-50 dark-mode:bg-gray-800 rounded">
+                            <div class="flex justify-between font-medium">
+                                <span>Total (Incl. Shipping & Tax)</span>
+                                <span id="checkout-total" class="text-xl font-bold">$0.00</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 flex justify-between">
+                            <button class="btn-secondary" onclick="setCheckoutStep(2)">← Back to Shipping</button>
+                            <button class="btn-primary" onclick="placeOrder()">Place Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-wishlist" class="page max-w-7xl mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-8">My Wishlist</h1>
+            <div id="wishlist-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                </div>
+            <div id="empty-wishlist-message" class="text-center py-12 border border-dashed mt-4 p-8 bg-gray-50 dark-mode:bg-gray-800" style="display: none;">
+                <span class="text-6xl mb-4 block">💖</span>
+                <h2 class="text-2xl font-semibold mb-2">Your Wishlist is Empty</h2>
+                <p class="text-gray-600 dark-mode:text-gray-400">Save your favorites for later!</p>
+                <button class="btn-primary mt-6" onclick="navigateTo('shop', null, true)">Start Browsing</button>
+            </div>
+        </section>
+
+        <section id="page-account" class="page max-w-7xl mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-8">My Account</h1>
+            
+            <div id="account-status" class="mb-8">
+                 <h2 id="welcome-message" class="text-2xl font-semibold">Welcome, Guest!</h2>
+                 <p class="text-gray-600 dark-mode:text-gray-400">Manage your orders, profile, and preferences here.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-4">
+                    <button class="w-full text-left p-4 border rounded hover:bg-gray-100 dark-mode:hover:bg-gray-700 transition font-medium" onclick="toggleAccountView('profile')">Profile Details</button>
+                    <button class="w-full text-left p-4 border rounded hover:bg-gray-100 dark-mode:hover:bg-gray-700 transition font-medium" onclick="toggleAccountView('orders')">Order History</button>
+                    <button class="w-full text-left p-4 border rounded hover:bg-gray-100 dark-mode:hover:bg-gray-700 transition font-medium" onclick="toggleAccountView('addresses')">Saved Addresses</button>
+                    <button id="logout-button" class="w-full text-left p-4 border rounded hover:bg-red-50 dark-mode:hover:bg-red-900 transition font-medium text-red-600 dark-mode:text-red-400" onclick="logout()">Logout</button>
+                    <button id="login-button" class="w-full text-left p-4 btn-primary transition font-medium" onclick="toggleAccountView('login')">Login / Register</button>
+                </div>
+                <div class="lg:col-span-2 account-panel p-6 bg-white dark-mode:bg-gray-700 shadow-md">
+                    
+                    <div id="account-view-profile">
+                        <h3 class="text-2xl font-bold mb-4">Profile Details</h3>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="text" placeholder="First Name" class="p-3 border rounded dark-mode:bg-gray-800" value="John">
+                                <input type="text" placeholder="Last Name" class="p-3 border rounded dark-mode:bg-gray-800" value="Doe">
+                            </div>
+                            <input type="email" placeholder="Email Address" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="john.doe@example.com">
+                            <input type="password" placeholder="Change Password" class="w-full p-3 border rounded dark-mode:bg-gray-800">
+                            <button class="btn-primary">Save Profile</button>
+                        </div>
+                    </div>
+
+                    <div id="account-view-orders" style="display: none;">
+                        <h3 class="text-2xl font-bold mb-4">Order History</h3>
+                        <div id="order-history-container" class="space-y-4">
+                            </div>
+                        <p id="no-orders-message" class="text-gray-600 dark-mode:text-gray-400">You have no past orders.</p>
+                    </div>
+
+                    <div id="account-view-addresses" style="display: none;">
+                        <h3 class="text-2xl font-bold mb-4">Saved Addresses</h3>
+                        <div id="addresses-container" class="space-y-4">
+                            </div>
+                        <button class="btn-secondary mt-4" onclick="addNewAddress()">+ Add New Address</button>
+                    </div>
+
+                    <div id="account-view-login">
+                         <h3 class="text-2xl font-bold mb-4">Login or Register</h3>
+                         <div class="space-y-4">
+                             <input type="email" id="login-email" placeholder="Email Address" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="user@test.com">
+                             <input type="password" id="login-password" placeholder="Password" class="w-full p-3 border rounded dark-mode:bg-gray-800" value="password">
+                             <button class="btn-primary w-full" onclick="mockLogin()">Login</button>
+                             <p class="text-center text-sm text-gray-600 dark-mode:text-gray-400">Don't have an account? <a href="#" onclick="showNotification('Registration not implemented in mockup')" class="underline">Register here</a></p>
+                         </div>
+                         <div class="mt-8 pt-4 border-t border-gray-200 dark-mode:border-gray-700">
+                             <h4 class="text-lg font-semibold mb-2">Mock Credentials:</h4>
+                             <p class="text-sm">User: <code>user@test.com</code> / <code>password</code></p>
+                             <p class="text-sm">Admin: <code>admin@luxe.com</code> / <code>12345</code> (Accesses admin.html)</p>
+                         </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="page-about" class="page max-w-7xl mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-8">About LUXE</h1>
+            <div class="max-w-4xl mx-auto space-y-6">
+                <p class="text-lg">LUXE is a fictional e-commerce platform dedicated to showcasing the art of modern luxury and timeless design. This site serves as a frontend development mockup, built purely with HTML, Tailwind CSS, and Vanilla JavaScript to demonstrate robust single-page application (SPA) behaviors, fluid transitions, and component reusability.</p>
+
+                <h2 class="text-3xl font-semibold pt-4">Our Philosophy</h2>
+                <p>We believe that luxury should be accessible and defined by quality, not just price. Every product in our collection—though simulated—is designed to represent sophistication, meticulous craftsmanship, and enduring style. We aim to inspire confidence and elegance in every piece.</p>
+
+                <h2 class="text-3xl font-semibold pt-4">Technology Stack</h2>
+                <ul class="list-disc list-inside space-y-2">
+                    <li>**HTML5:** Semantic structure.</li>
+                    <li>**Tailwind CSS:** Utility-first styling for rapid, responsive design.</li>
+                    <li>**Vanilla JavaScript:** Core logic, state management (using `localStorage`), and component rendering.</li>
+                    <li>**SPA Simulation:** Page transitions are handled via dynamic class toggling and CSS animations, mimicking a true single-page application experience.</li>
+                </ul>
+
+                <p class="pt-4 text-center">Thank you for exploring the LUXE mockup.</p>
+            </div>
+        </section>
+
+
+        <section id="page-order-confirmation" class="page text-center max-w-2xl mx-auto px-4">
+             <span class="text-9xl mb-6 block">✨</span>
+             <h1 class="text-5xl font-extrabold mb-4">Order Placed Successfully!</h1>
+             <p class="text-xl text-gray-700 dark-mode:text-gray-300 mb-6">Your order (<span id="confirmation-order-id">#LUXE-000</span>) has been confirmed and is being processed.</p>
+             <div class="p-6 bg-gray-100 dark-mode:bg-gray-800 rounded-lg shadow-inner space-y-3">
+                <p class="font-semibold">Order Total: <span id="confirmation-total" class="text-2xl">$0.00</span></p>
+                <p class="text-sm text-gray-600 dark-mode:text-gray-400">A confirmation email has been sent to your address.</p>
+             </div>
+             <div class="flex justify-center space-x-4 mt-8">
+                 <button class="btn-secondary" onclick="navigateTo('home', null, false)">Back to Home</button>
+                 <button class="btn-primary" onclick="navigateTo('account', null, true)">View My Orders</button>
+             </div>
+        </section>
+
+
+    </main>
+
+    <footer class="bg-black text-white py-12 mt-16">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-xl font-bold mb-4 uppercase">LUXE</h3>
+                <p class="text-sm text-gray-400">Timeless elegance meets modern design.</p>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" class="hover:text-gray-300" aria-label="Instagram">📸</a>
+                    <a href="#" class="hover:text-gray-300" aria-label="Twitter">🐦</a>
+                    <a href="#" class="hover:text-gray-300" aria-label="Facebook">📘</a>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-3">Shop</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#" onclick="navigateTo('shop', null, true)" class="hover:text-white">New Arrivals</a></li>
+                    <li><a href="#" onclick="filterByCategory('Women')" class="hover:text-white">Women's Collection</a></li>
+                    <li><a href="#" onclick="filterByCategory('Men')" class="hover:text-white">Men's Collection</a></li>
+                    <li><a href="#" onclick="filterByCategory('Accessories')" class="hover:text-white">Accessories</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-3">Service</h4>
+                <ul class="space-y-2 text-sm text-gray-400">
+                    <li><a href="#" onclick="navigateTo('account', null, true)" class="hover:text-white">My Account</a></li>
+                    <li><a href="#" onclick="navigateTo('cart', null, true)" class="hover:text-white">Shipping & Returns</a></li>
+                    <li><a href="#" onclick="navigateTo('cart', null, true)" class="hover:text-white">FAQ</a></li>
+                    <li><a href="#" onclick="openDocumentation()" class="hover:text-white">Documentation</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold mb-3">Newsletter</h4>
+                <p class="text-sm text-gray-400 mb-3">Subscribe for exclusive offers.</p>
+                <div class="flex">
+                    <input type="email" placeholder="Email address" class="p-2 flex-1 bg-gray-800 border border-gray-700 text-white text-sm">
+                    <button class="bg-white text-black p-2 text-sm font-semibold hover:bg-gray-200">Go</button>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 text-center mt-10 border-t border-gray-800 pt-6">
+            <p class="text-xs text-gray-500">&copy; 2025 LUXE Mockup Co. All rights reserved. | Developed for demonstration purposes.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
